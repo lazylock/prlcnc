@@ -4,7 +4,12 @@
 </template>
 
 <script>
+import Vue from 'vue';
+import Buefy from 'buefy';
 import home from './views/Home.vue';
+import 'buefy/dist/buefy.css';
+
+Vue.use(Buefy);
 
 export default {
   name: 'app',

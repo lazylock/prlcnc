@@ -1,6 +1,7 @@
 <template lang='pug'>
   div(id='home')
-    calc(v-if='showCalc')
+    b-modal(:active.sync='showCalc' has-modal-card)
+      calc()
 </template>
 
 <script>
@@ -15,7 +16,7 @@ export default {
 
   data() {
     return {
-      showCalc: false,
+      showCalc: true,
     }
   },
 

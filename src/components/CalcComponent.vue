@@ -21,7 +21,7 @@
           b-input(
             v-model='diameter'
             min='0'
-            step='0.125'
+            step='0.001'
             type='number')
         b-field(label='Number of Flutes')
           b-input(
@@ -30,19 +30,42 @@
             max='6'
             step='1'
             type='number')
+        hr()
         b-field(label='Chip Load')
-          b-input(
-            v-model='chipLoad'
-            min='0'
-            step='0.001'
-            type='number')
-        span(id='speed') Speed: {{ speed }} rpm
-        span(id='feed') Feed: {{ feed }} in/min
+          div(class='control has-icons-right')
+            b-input(
+              v-model='chipLoad'
+              min='0'
+              step='0.001'
+              type='number')
+            span(class='icon is-right')
+              a(@click="calculateChipLoad")
+                i(class='fas fa-undo clickable')
+        b-field(label='Spindle Speed (rpm)')
+          div(class='control has-icons-right')
+            b-input(
+              v-model='speed'
+              min='0'
+              step='1'
+              type='number')
+            span(class='icon is-right')
+              a(@click="calculateSpeed")
+                i(class='fas fa-undo clickable')
+        b-field(label='Feed Rate (in/min)')
+          div(class='control has-icons-right')
+            b-input(
+              v-model='feed'
+              min='0'
+              step='1'
+              type='number')
+            span(class='icon is-right')
+              a(@click="calculateFeed")
+                i(class='fas fa-undo clickable')
       footer(class='modal-card-foot')
         div(class='buttons' expanded)
-          a(class='button is-left')
+          a(class='button is-left' @click='init')
             span(class='icon is-small')
-              i(class='fas fa-undo')
+              i(class='fas fa-eraser')
           a(class='button is-centered')
             span(class='icon is-small')
               i(class='fas fa-plus')
@@ -57,6 +80,8 @@ import vals from '@/values.js';
 export default {
   data() {
     return {
+      //TODO: Move material to calc param, make global for job
+      //TODO: Allow creation of jobs
       material: '',
       matOptions: [
         { text: 'Plastic', value: 'plastic' },
@@ -75,34 +100,69 @@ export default {
       ],
       diameter: '',
       numFlutes: '',
-      chipLoad: '',
       values: vals,
+      chipLoad: '',
+      speed: '',
+      feed: '',
     };
   },
 
-  mounted() {
-    this.init();
-  },
-
-  computed: {
-    speed() {
-      if (this.tool === 'face') {
-        return Math.round((this.values.sfm[this.tool][this.material] * 4) / this.diameter);
-      }
-      return '';
+  watch: {
+    material() {
+      this.calculate()
     },
-    feed() {
-      return this.chipLoad * this.numFlutes * this.speed;
+    tool() {
+      this.calculate()
+    },
+    diameter() {
+      this.calculate()
+    },
+    numFlutes() {
+      this.calculate()
+    },
+    chipLoad() {
+      this.calculateFeed()
     },
   },
 
   methods: {
     submitHandler(event) {
-      this.$emit('submit', event);
+      this.$emit('submit', event)
+    },
+
+    calculate() {
+      this.calculateChipLoad()
+      this.calculateSpeed()
+      this.calculateFeed()
+    },
+
+    calculateChipLoad() {
+      if (this.tool && this.material && this.diameter) {
+        this.chipLoad = 0.001
+      }
+    },
+
+    calculateSpeed() {
+      if (this.tool && this.material && this.diameter) {
+        this.speed = Math.round((this.values.sfm[this.tool][this.material] * 4) / this.diameter)
+      }
+    },
+
+    calculateFeed() {
+      if (this.chipLoad && this.numFlutes && this.speed) {
+        this.feed = Math.round(this.chipLoad * this.numFlutes * this.speed)
+      }
     },
 
     init() {
-      this.material = '';
+      this.material = ''
+      this.tool = ''
+      this.toolNum = ''
+      this.diameter = ''
+      this.numFlutes = ''
+      this.chipLoad = ''
+      this.speed = ''
+      this.feed = ''
     },
   },
 };
@@ -110,5 +170,18 @@ export default {
 
 <style lang='sass'>
 @import '@/styles/vars.sass'
+
+.clickable
+  pointer-events: initial
+
+.modal-card
+  padding: 0 1em
+
+.modal-close
+  display: none !important
+
+.dropdown-menu
+  max-width: none
+  width: auto
 
 </style>

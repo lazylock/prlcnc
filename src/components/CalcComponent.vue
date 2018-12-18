@@ -3,18 +3,18 @@
     div(class='modal-card')
       header(class='modal-card-head')
         p(class='modal-card-title') Tool {{toolNum}}
-        a(class='delete' aria-label='close')
+        a(class='delete'  @click='$parent.close()' aria-label='close')
       section(class='modal-card-body')
-        b-field(label='Material')
-          b-select(v-model='material' placeholder='Select a Material' expanded)
-            option(
-              v-for='option in matOptions'
-              v-bind:value='option.value'
-              ) {{ option.text }}
         b-field(label='Tool Type')
-          b-select(v-model='tool' placeholder='Select a Material' expanded)
+          b-select(v-model='tool' expanded)
             option(
               v-for='option in toolOptions'
+              v-bind:value='option.value'
+              ) {{ option.text }}
+        b-field(v-if="tool==='mill'" label='Tool Material')
+          b-select(v-model='toolMat' expanded)
+            option(
+              v-for='option in toolMatOptions'
               v-bind:value='option.value'
               ) {{ option.text }}
         b-field(label='Tool Diameter')
@@ -40,7 +40,7 @@
               type='number')
             span(class='icon is-right')
               a(@click="calculateChipLoad")
-                i(class='fas fa-undo clickable')
+                i(class='fas fa-calculator clickable')
         b-field(label='Spindle Speed (rpm)')
           div(class='control has-icons-right')
             b-input(
@@ -50,7 +50,7 @@
               type='number')
             span(class='icon is-right')
               a(@click="calculateSpeed")
-                i(class='fas fa-undo clickable')
+                i(class='fas fa-calculator clickable')
         b-field(label='Feed Rate (in/min)')
           div(class='control has-icons-right')
             b-input(
@@ -60,16 +60,16 @@
               type='number')
             span(class='icon is-right')
               a(@click="calculateFeed")
-                i(class='fas fa-undo clickable')
+                i(class='fas fa-calculator clickable')
       footer(class='modal-card-foot')
-        div(class='buttons' expanded)
-          a(class='button is-left' @click='init')
+        div(class='buttons columns')
+          a(class='button column is-fullwidth' @click='init')
             span(class='icon is-small')
               i(class='fas fa-eraser')
-          a(class='button is-centered')
+          a(class='button column is-fullwidth' @click='addTool')
             span(class='icon is-small')
               i(class='fas fa-plus')
-          a(class='button is-right')
+          a(class='button column is-fullwidth' @click='saveTool')
             span(class='icon is-small')
               i(class='fas fa-check')
 </template>
@@ -83,35 +83,36 @@ export default {
       //TODO: Move material to calc param, make global for job
       //TODO: Allow creation of jobs
       material: '',
-      matOptions: [
-        { text: 'Plastic', value: 'plastic' },
-        { text: 'Aluminum', value: 'aluminum' },
-        { text: 'Brass', value: 'brass' },
-        { text: 'Bronze', value: 'bronze' },
-        { text: 'Mild Steel', value: 'mild_steel' },
-        { text: 'Stainless Steel', value: 'stainless_steel' },
-      ],
-      tool: '',
+      totalNumTools: '',
       toolNum: '',
+      tool: '',
+      toolMat: '',
+      diameter: '',
+      numFlutes: '',
+      chipLoad: '',
+      speed: '',
+      feed: '',
       toolOptions: [
         { text: 'End Mill', value: 'mill' },
         { text: 'Drill', value: 'drill' },
         { text: 'Face Mill', value: 'face' },
+        { text: 'Countersink', value: 'countersink' },
+        { text: 'Reamer', value: 'reamer' },
+        { text: 'Tap', value: 'tap' },
       ],
-      diameter: '',
-      numFlutes: '',
+      toolMatOptions: [
+        { text: 'HSS', value: 'hss' },
+        { text: 'Carbide', value: 'carbide' },
+      ],
       values: vals,
-      chipLoad: '',
-      speed: '',
-      feed: '',
     };
   },
 
   watch: {
-    material() {
+    tool() {
       this.calculate()
     },
-    tool() {
+    toolMat() {
       this.calculate()
     },
     diameter() {
@@ -154,10 +155,34 @@ export default {
       }
     },
 
+    addTool() {
+      this.doneTool()
+      this.totalNumTools += 1
+      this.toolNum = this.totalNumTools
+      this.init()
+    },
+
+    saveTool() {
+      this.doneTool()
+      this.$parent.close()
+    },
+
+    doneTool() {
+      const newTool = {
+        tool: this.tool,
+        toolMat: this.toolMat,
+        diameter: this.diameter,
+        numFlutes: this.numFlutes,
+        chipLoad: this.chipLoad,
+        speed: this.speed,
+        feed: this.feed,
+      }
+      this.$emit('save', this.toolNum, newTool)
+    },
+
     init() {
-      this.material = ''
       this.tool = ''
-      this.toolNum = ''
+      this.toolMat = ''
       this.diameter = ''
       this.numFlutes = ''
       this.chipLoad = ''
@@ -180,8 +205,13 @@ export default {
 .modal-close
   display: none !important
 
-.dropdown-menu
-  max-width: none
-  width: auto
+.modal-card-foot
+  justify-content: center !important
+
+.buttons
+  width: 100%
+
+.button
+  margin-top: 0.5rem
 
 </style>

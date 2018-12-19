@@ -3,7 +3,7 @@
     div(class='modal-card')
       header(class='modal-card-head')
         p(class='modal-card-title') Tool {{toolNum}}
-        a(class='delete'  @click='$parent.close()' aria-label='close')
+        a(class='delete' @click='$parent.close()' aria-label='close')
       section(class='modal-card-body')
         b-field(label='Type')
           b-select(v-model='type' expanded)

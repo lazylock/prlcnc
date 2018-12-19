@@ -49,11 +49,11 @@ export default {
 
   methods: {
     editHandler() {
-      this.$emit('edit', this.toolNum)
+      this.$emit('editTool', this.toolNum)
     },
 
-    trashHandler() {
-      this.$emit('delete', this.toolNum)
+    deleteHandler() {
+      this.$emit('deleteTool', this.toolNum)
     },
   },
 };

@@ -1,22 +1,30 @@
 <template lang='pug'>
   div(id='home')
+    draggable(v-model='tools' @start='drag=true' @end='drag=false')
+      tool(v-for='tool in tools' :key='tool.toolNum')
     b-modal(:active.sync='showCalc' has-modal-card)
-      calc()
+      calc(@save='saveHandler')
 </template>
 
 <script>
 import calc from '@/components/CalcComponent.vue'
-// import Tool from '@/components/ToolComponent.vue'
+import tool from '@/components/ToolComponent.vue'
+import draggable from 'vuedraggable'
 
 export default {
   components: {
     calc,
-    // 'tool': Tool,
+    tool,
+    draggable,
   },
+
+  props: [
+    'tools',
+  ],
 
   data() {
     return {
-      showCalc: true,
+      showCalc: false,
     }
   },
 
@@ -25,8 +33,16 @@ export default {
   },
 
   methods: {
+    saveHandler(event, tool){
+
+    },
+
+    editHandler(event, toolNum){
+      
+    },
+
     init() {
-      this.showCalc = true
+      this.showCalc = false
     },
   },
 }

@@ -5,19 +5,19 @@
         p(class='modal-card-title') Tool {{toolNum}}
         a(class='delete'  @click='$parent.close()' aria-label='close')
       section(class='modal-card-body')
-        b-field(label='Tool Type')
-          b-select(v-model='tool' expanded)
+        b-field(label='Type')
+          b-select(v-model='type' expanded)
             option(
               v-for='option in toolOptions'
               v-bind:value='option.value'
               ) {{ option.text }}
-        b-field(v-if="tool==='mill'" label='Tool Material')
+        b-field(v-if="type==='mill'" label='Tool Material')
           b-select(v-model='toolMat' expanded)
             option(
               v-for='option in toolMatOptions'
               v-bind:value='option.value'
               ) {{ option.text }}
-        b-field(label='Tool Diameter')
+        b-field(label='Diameter')
           b-input(
             v-model='diameter'
             min='0'
@@ -78,23 +78,28 @@
 import vals from '@/values.js';
 
 export default {
+  props: [
+    'material',
+    'totalNumTools',
+    'toolNum',
+    'type',
+    'toolMat',
+    'diameter',
+    'numFlutes',
+    'chipLoad',
+    'speed',
+    'feed',
+  ],
+
   data() {
     return {
       //TODO: Move material to calc param, make global for job
       //TODO: Allow creation of jobs
-      material: '',
-      totalNumTools: '',
-      toolNum: '',
-      tool: '',
-      toolMat: '',
-      diameter: '',
-      numFlutes: '',
-      chipLoad: '',
-      speed: '',
-      feed: '',
       toolOptions: [
         { text: 'End Mill', value: 'mill' },
+        { text: 'Ball End Mill', value: 'ball_end_mill' },
         { text: 'Drill', value: 'drill' },
+        { text: 'Center Drill', value: 'center_drill' },
         { text: 'Face Mill', value: 'face' },
         { text: 'Countersink', value: 'countersink' },
         { text: 'Reamer', value: 'reamer' },
@@ -109,7 +114,7 @@ export default {
   },
 
   watch: {
-    tool() {
+    type() {
       this.calculate()
     },
     toolMat() {
@@ -138,14 +143,14 @@ export default {
     },
 
     calculateChipLoad() {
-      if (this.tool && this.material && this.diameter) {
+      if (this.type && this.material && this.diameter) {
         this.chipLoad = 0.001
       }
     },
 
     calculateSpeed() {
-      if (this.tool && this.material && this.diameter) {
-        this.speed = Math.round((this.values.sfm[this.tool][this.material] * 4) / this.diameter)
+      if (this.type && this.material && this.diameter) {
+        this.speed = Math.round((this.values.sfm[this.type][this.material] * 4) / this.diameter)
       }
     },
 
@@ -169,7 +174,7 @@ export default {
 
     doneTool() {
       const newTool = {
-        tool: this.tool,
+        type: this.type,
         toolMat: this.toolMat,
         diameter: this.diameter,
         numFlutes: this.numFlutes,
@@ -181,7 +186,7 @@ export default {
     },
 
     init() {
-      this.tool = ''
+      this.type = ''
       this.toolMat = ''
       this.diameter = ''
       this.numFlutes = ''

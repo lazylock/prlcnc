@@ -6,26 +6,26 @@
         a(class='delete' @click='$parent.close()' aria-label='close')
       section(class='modal-card-body')
         b-field(label='Type')
-          b-select(v-model='type' expanded)
+          b-select(v-model='tool.type' expanded)
             option(
               v-for='option in toolOptions'
               v-bind:value='option.value'
               ) {{ option.text }}
-        b-field(v-if="type==='mill'" label='Tool Material')
-          b-select(v-model='toolMat' expanded)
+        b-field(v-if="tool.type==='mill'" label='Tool Material')
+          b-select(v-model='tool.toolMat' expanded)
             option(
               v-for='option in toolMatOptions'
               v-bind:value='option.value'
               ) {{ option.text }}
         b-field(label='Diameter')
           b-input(
-            v-model='diameter'
+            v-model='tool.diameter'
             min='0'
             step='0.001'
             type='number')
         b-field(label='Number of Flutes')
           b-input(
-            v-model='numFlutes'
+            v-model='tool.numFlutes'
             min='0'
             max='6'
             step='1'
@@ -34,7 +34,7 @@
         b-field(label='Chip Load')
           div(class='control has-icons-right')
             b-input(
-              v-model='chipLoad'
+              v-model='tool.chipLoad'
               min='0'
               step='0.001'
               type='number')
@@ -54,7 +54,7 @@
         b-field(label='Feed Rate (in/min)')
           div(class='control has-icons-right')
             b-input(
-              v-model='feed'
+              v-model='tool.feed'
               min='0'
               step='1'
               type='number')
@@ -82,19 +82,11 @@ export default {
     'material',
     'totalNumTools',
     'toolNum',
-    'type',
-    'toolMat',
-    'diameter',
-    'numFlutes',
-    'chipLoad',
-    'speed',
-    'feed',
+    'tool',
   ],
 
   data() {
     return {
-      //TODO: Move material to calc param, make global for job
-      //TODO: Allow creation of jobs
       toolOptions: [
         { text: 'End Mill', value: 'mill' },
         { text: 'Ball End Mill', value: 'ball_end_mill' },
@@ -132,10 +124,6 @@ export default {
   },
 
   methods: {
-    submitHandler(event) {
-      this.$emit('submit', event)
-    },
-
     calculate() {
       this.calculateChipLoad()
       this.calculateSpeed()
@@ -143,27 +131,27 @@ export default {
     },
 
     calculateChipLoad() {
-      if (this.type && this.material && this.diameter) {
-        this.chipLoad = 0.001
+      if (this.tool.type && this.material && this.tool.diameter) {
+        this.tool.chipLoad = 0.001
       }
     },
 
     calculateSpeed() {
-      if (this.type && this.material && this.diameter) {
-        this.speed = Math.round((this.values.sfm[this.type][this.material] * 4) / this.diameter)
+      if (this.tool.type && this.tool.material && this.tool.diameter) {
+        const sfm = this.values.sfm[this.tool.type][this.material]
+        this.tool.speed = Math.round((sfm * 4) / this.tool.diameter)
       }
     },
 
     calculateFeed() {
-      if (this.chipLoad && this.numFlutes && this.speed) {
-        this.feed = Math.round(this.chipLoad * this.numFlutes * this.speed)
+      if (this.tool.chipLoad && this.tool.numFlutes && this.tool.speed) {
+        this.feed = Math.round(this.tool.chipLoad * this.tool.numFlutes * this.tool.speed)
       }
     },
 
     addTool() {
       this.doneTool()
-      this.totalNumTools += 1
-      this.toolNum = this.totalNumTools
+      this.toolNum = this.totalNumTools + 1
       this.init()
     },
 
@@ -174,25 +162,25 @@ export default {
 
     doneTool() {
       const newTool = {
-        type: this.type,
-        toolMat: this.toolMat,
-        diameter: this.diameter,
-        numFlutes: this.numFlutes,
-        chipLoad: this.chipLoad,
-        speed: this.speed,
-        feed: this.feed,
+        type: this.tool.type,
+        toolMat: this.tool.toolMat,
+        diameter: this.tool.diameter,
+        numFlutes: this.tool.numFlutes,
+        chipLoad: this.tool.chipLoad,
+        speed: this.tool.speed,
+        feed: this.tool.feed,
       }
-      this.$emit('save', this.toolNum, newTool)
+      this.$emit('saveTool', this.toolNum, newTool)
     },
 
     init() {
-      this.type = ''
-      this.toolMat = ''
-      this.diameter = ''
-      this.numFlutes = ''
-      this.chipLoad = ''
-      this.speed = ''
-      this.feed = ''
+      this.tool.type = ''
+      this.tool.toolMat = ''
+      this.tool.diameter = ''
+      this.tool.numFlutes = ''
+      this.tool.chipLoad = ''
+      this.tool.speed = ''
+      this.tool.feed = ''
     },
   },
 };

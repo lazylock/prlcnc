@@ -5,11 +5,11 @@
         span(class='icon')
           i(class='fas fa-grip-vertical')
       div(class='tool')
-        p(class='title') T{{toolNum}} | {{diameter}}" {{name}}
+        p(class='title') T{{toolNum}} | {{tool.diameter}}" {{name}}
       div(class='speed')
-        p(class='subtitle') Speed: {{speed}} rpm
+        p(class='subtitle') Speed: {{tool.speed}} rpm
       div(class='feed')
-        p(class='subtitle') Feed: {{feed}} in/min
+        p(class='subtitle') Feed: {{tool.feed}} in/min
       div(class='trash')
         a(@click='trashHandler')
           span(class='icon')
@@ -25,16 +25,8 @@
 export default {
 
   props: [
-    'material',
-    'totalNumTools',
     'toolNum',
-    'type',
-    'toolMat',
-    'diameter',
-    'numFlutes',
-    'chipLoad',
-    'speed',
-    'feed',
+    'tool',
   ],
 
   computed: {

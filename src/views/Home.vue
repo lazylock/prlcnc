@@ -8,17 +8,27 @@
       @deleteSetup='deleteSetupHandler(setup)'
       @addSetup='addSetupHandler'
       )
-    draggable(v-model='tools' @start='drag=true' @end='drag=false')
+    draggable(v-model='activeTools' @start='drag=true' @end='drag=false')
       tool(
-        v-for='tool in tools'
-        :key='tool.toolNum'
+        v-for='tool in activeTools'
+        :tool='tool'
+        :key='Math.random()'
         @deleteTool='deleteToolHandler'
         @editTool='editToolHandler'
         )
     b-modal(:active.sync='showCalc' has-modal-card)
-      calc(@saveTool='saveToolHandler')
+      calc(
+        :material='activeMaterial'
+        :totalNumTools='totalNumTools'
+        :toolNum='activeToolNum'
+        :tool='activeTool'
+         @saveTool='saveToolHandler')
     b-modal(:active.sync='showSetup' has-modal-card)
-      setup(@saveSetup='saveSetupHandler')
+      setup(@saveSetup='saveSetupHandler($event)' :setup='activeSetup')
+    div(class='bottom')
+      a(class='button circle is-large is-rounded' @click='addToolHandler')
+        span(class='icon')
+          i(class='fas fa-plus')
 </template>
 
 <script>
@@ -37,55 +47,102 @@ export default {
     navigation,
   },
 
-  props: [
-    'tools',
-    'setups',
-  ],
-
   data() {
     return {
-      showCalc: true,
+      showCalc: false,
       showSetup: false,
-      activeSetup: '',
+      setups: [],
+      activeSetup: {
+        name: '',
+        material: '',
+        maxSpeed: '',
+        id: '',
+      },
+      activeTool: {
+        type: '',
+        toolMat: '',
+        diameter: '',
+        numFlutes: '',
+        chipLoad: '',
+        speed: '',
+        feed: '',
+      },
+      activeToolNum: 1,
     }
   },
 
-  watch: {
+  computed: {
+    activeSetupIndex() {
+      if (this.setups) {
+        return this.setups.indexOf(testSetup => testSetup.data.id === this.activeSetup.id)
+      }
+      return ''
+    },
+    activeMaterial() {
+      if (this.activeSetupIndex !== -1 && this.activeSetup) {
+        return this.setups[this.activeSetupIndex].data.material
+      }
+      return ''
+    },
+    activeTools() {
+      if (this.activeSetupIndex !== -1 && this.activeSetup) {
+        return this.setups[this.activeSetupIndex].tools
+      }
+      return []
+    },
+    totalNumTools() {
+      return this.activeTools.length
+    },
+  },
 
+  mounted() {
+    this.init()
   },
 
   methods: {
-    saveToolHandler(tool) {
-
+    addToolHandler() {
+      this.showCalc = true
     },
 
-    editToolHandler(toolNum) {
-      
+    saveToolHandler(savedTool) {
+      this.setups[this.activeSetupIndex][this.activeToolNum] = savedTool
     },
 
-    deleteToolHandler(toolNum) {
-      
+    deleteToolHandler() {
+      this.setups[this.activeSetupIndex].splice(this.activeToolNum, 1)
     },
 
     showSetupHandler(targetSetup) {
-      this.activeSetup = this.setups.find(setup => setup.id === targetSetup.id)
+      this.showSetup = true
     },
 
     duplicateSetupHandler(targetSetup) {
-      const duplicatedSetup = this.setups.find(setup => setup.id === targetSetup.id)
+      const duplicatedSetup = this.setups.find(testSetup => testSetup.id !== targetSetup.id)
       this.setups.push(duplicatedSetup)
     },
 
     deleteSetupHandler(targetSetup) {
-      this.setups.filter(setup => setup.id !== targetSetup.id)
+      this.setups.filter(testSetup => testSetup.id !== targetSetup.id)
     },
 
-    addSetupHandler() {
-
+    saveSetupHandler(savedSetup) {
+      this.activeSetup = savedSetup
+      if (this.activeSetupIndex !== -1) {
+        this.setups[this.activeSetupIndex].data = savedSetup
+      } else {
+        const newSetup = {
+          data: savedSetup,
+          tools: [],
+        }
+        this.setups.push(newSetup)
+      }
     },
 
     init() {
       this.showCalc = false
+      if (!this.setups.length) {
+        this.showSetup = true
+      }
     },
   },
 }
@@ -94,4 +151,12 @@ export default {
 
 <style lang='sass'>
 @import '@/styles/vars.sass'
+
+.bottom
+  width: 100%
+  position: fixed
+  bottom: 1rem
+  display: flex
+  justify-content: center
+
 </style>

@@ -1,7 +1,7 @@
 <template lang='pug'>
   nav(class='navbar' role='navigation' aria-label='main navigation')
     div(class='navbar-brand')
-      p(class='navbar-item') PRLCNC | {{activeSetup}}
+      p(class='navbar-item') PRLCNC | {{activeSetup.name}}
       a(
         role='button'
         class='navbar-burger burger'
@@ -19,7 +19,7 @@
         div(class='navbar-item has-dropdown is-hoverable')
           a(class='navbar-link') Setups
           div(class='navbar-dropdown')
-            a(class='navbar-item' v-for='setup in setups' @click='showHandler') {{setup.name}}
+            a(class='navbar-item' v-for='setup in setups' @click='showHandler') {{setup.data.name}}
               a(@click='duplicateHandler(setup.id)')
                 span(class='icon')
                   i(class='fas fa-copy clickable')

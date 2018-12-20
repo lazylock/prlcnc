@@ -1,5 +1,5 @@
 <template lang='pug'>
-  form(@keypress.enter='submitHandler')
+  form(@keypress.enter='enterHandler')
     div(class='modal-card')
       header(class='modal-card-head')
         p(class='modal-card-title')
@@ -7,30 +7,30 @@
             b-input(
               class='hidden-input title'
               size='is-large'
-              v-model='setupName'
+              v-model='setup.name'
               @focus='focusHandler'
               @blur='blurHandler'
               )
         a(class='delete' @click='$parent.close()' aria-label='close')
       section(class='modal-card-body')
         b-field(label='Material')
-          b-select(v-model='type' expanded)
+          b-select(v-model='setup.material' expanded)
             option(
               v-for='option in matOptions'
               v-bind:value='option.value'
               ) {{ option.text }}
         b-field(label='Max Spindle Speed')
           b-input(
-            v-model='maxSpeed'
+            v-model='setup.maxSpeed'
             min='0'
             step='1'
             type='number')
       footer(class='modal-card-foot')
         div(class='buttons columns')
-          a(class='button column is-fullwidth' @click='init')
+          a(class='button column is-fullwidth' @click='clearHandler')
             span(class='icon is-small')
               i(class='fas fa-eraser')
-          a(class='button column is-fullwidth' @click='saveTool')
+          a(class='button column is-fullwidth' @click='saveHandler')
             span(class='icon is-small')
               i(class='fas fa-check')
 </template>
@@ -39,9 +39,7 @@
 
 export default {
   props: [
-    'setupName',
-    'material',
-    'maxSpeed',
+    'setup',
   ],
 
   data() {
@@ -56,6 +54,10 @@ export default {
     };
   },
 
+  mounted() {
+    this.init()
+  },
+
   methods: {
     focusHandler(event) {
       event.target.classList.toggle('hidden-input')
@@ -64,8 +66,34 @@ export default {
     blurHandler(event) {
       event.target.classList.toggle('hidden-input')
     },
+
+    clearHandler() {
+      this.setup.name = ''
+      this.setup.material = ''
+      this.setup.maxSpeed = ''
+    },
+
+    saveHandler() {
+      //if (Object.values(this.setup).every(val => val !== '')) {
+        this.$emit('saveSetup', this.setup)
+        this.$parent.close()
+      //}
+    },
+
+    enterHandler() {
+
+    },
+
+    init() {
+      if (!this.setup.id) {
+        this.setup.name = ''
+        this.setup.material = ''
+        this.setup.maxSpeed = ''
+        this.setup.id = Math.random()
+      }
+    },
   },
-};
+}
 </script>
 
 <style lang='sass'>

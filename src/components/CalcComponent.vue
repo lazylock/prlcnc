@@ -44,7 +44,7 @@
         b-field(label='Spindle Speed (rpm)')
           div(class='control has-icons-right')
             b-input(
-              v-model='speed'
+              v-model='tool.speed'
               min='0'
               step='1'
               type='number')
@@ -170,7 +170,7 @@ export default {
         speed: this.tool.speed,
         feed: this.tool.feed,
       }
-      this.$emit('saveTool', this.toolNum, newTool)
+      this.$emit('saveTool', newTool)
     },
 
     init() {

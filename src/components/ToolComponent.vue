@@ -5,13 +5,13 @@
         span(class='icon')
           i(class='fas fa-grip-vertical')
       div(class='tool')
-        p(class='title') T{{toolNum}} | {{tool.diameter}}" {{name}}
+        h4(class='title is-4') T{{toolNum}} | {{tool.diameter}}" {{name}}
       div(class='speed')
         p(class='subtitle') Speed: {{tool.speed}} rpm
       div(class='feed')
         p(class='subtitle') Feed: {{tool.feed}} in/min
       div(class='trash')
-        a(@click='trashHandler')
+        a(@click='deleteHandler')
           span(class='icon')
             i(class='fas fa-trash-alt clickable')
       div(class='edit')
@@ -31,7 +31,7 @@ export default {
 
   computed: {
     name() {
-      return this.type
+      return this.tool.type
         .toLowerCase()
         .split('_')
         .map(word => word[0].toUpperCase() + word.substr(1))

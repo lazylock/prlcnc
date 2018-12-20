@@ -1,7 +1,7 @@
 <template lang='pug'>
   nav(class='navbar' role='navigation' aria-label='main navigation')
     div(class='navbar-brand')
-      p(class='navbar-item') PRLCNC | {{activeSetup.name}}
+      p(class='navbar-item') PRLCNC | {{setupName}}
       a(
         role='button'
         class='navbar-burger burger'
@@ -40,6 +40,15 @@ export default {
     'setups',
     'activeSetup',
   ],
+
+  computed: {
+    setupName() {
+      if (Object.getOwnPropertyNames(this.activeSetup).length) {
+        return this.activeSetup.data.name
+      }
+      return ''
+    },
+  },
 
   methods: {
     burgerHandler() {

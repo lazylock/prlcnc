@@ -10,17 +10,18 @@
       )
     draggable(v-model='activeTools' @start='drag=true' @end='drag=false')
       tool(
-        v-for='tool in activeTools'
+        v-for='(tool,index) in activeTools'
         :tool='tool'
-        :key='Math.random()'
-        @deleteTool='deleteToolHandler'
-        @editTool='editToolHandler'
+        :toolNum='index+1'
+        :key='index'
+        @deleteTool='deleteToolHandler(index)'
+        @editTool='editToolHandler(index)'
         )
     b-modal(:active.sync='showCalc' has-modal-card)
       calc(
         :material='activeMaterial'
         :totalNumTools='totalNumTools'
-        :toolNum='activeToolNum'
+        :toolNum='activeToolIndex+1'
         :tool='activeTool'
          @saveTool='saveToolHandler')
     b-modal(:active.sync='showSetup' has-modal-card)
@@ -52,44 +53,45 @@ export default {
       showCalc: false,
       showSetup: false,
       setups: [],
-      activeSetup: {
-        name: '',
-        material: '',
-        maxSpeed: '',
-        id: '',
-      },
-      activeTool: {
-        type: '',
-        toolMat: '',
-        diameter: '',
-        numFlutes: '',
-        chipLoad: '',
-        speed: '',
-        feed: '',
-      },
-      activeToolNum: 1,
+      activeSetupIndex: 0,
+      activeToolIndex: 0,
     }
   },
 
   computed: {
-    activeSetupIndex() {
-      if (this.setups) {
-        return this.setups.indexOf(testSetup => testSetup.data.id === this.activeSetup.id)
+    activeSetup() {
+      if (this.setups.length) {
+        return this.setups[this.activeSetupIndex]
       }
-      return ''
+      return {}
     },
+
     activeMaterial() {
-      if (this.activeSetupIndex !== -1 && this.activeSetup) {
-        return this.setups[this.activeSetupIndex].data.material
+      if (Object.getOwnPropertyNames(this.activeSetup).length) {
+        return this.activeSetup.data.material
       }
       return ''
     },
-    activeTools() {
-      if (this.activeSetupIndex !== -1 && this.activeSetup) {
-        return this.setups[this.activeSetupIndex].tools
-      }
-      return []
+
+    activeTools: {
+      get() {
+        if (Object.getOwnPropertyNames(this.activeSetup).length) {
+          return this.activeSetup.tools
+        }
+        return []
+      },
+      set(newActiveTools) {
+        this.activeSetup.tools = newActiveTools
+      },
     },
+
+    activeTool() {
+      if (this.activeTools.length && this.activeToolIndex < this.totalNumTools) {
+        return this.activeTools[this.activeToolIndex]
+      }
+      return {}
+    },
+
     totalNumTools() {
       return this.activeTools.length
     },
@@ -101,19 +103,25 @@ export default {
 
   methods: {
     addToolHandler() {
+      this.activeToolIndex = this.totalNumTools
+      this.showCalc = true
+    },
+
+    editToolHandler(index) {
+      this.activeToolIndex = index
       this.showCalc = true
     },
 
     saveToolHandler(savedTool) {
-      this.setups[this.activeSetupIndex][this.activeToolNum] = savedTool
+      this.$set(this.setups[this.activeSetupIndex].tools, this.activeToolIndex, savedTool)
     },
 
-    deleteToolHandler() {
-      this.setups[this.activeSetupIndex].splice(this.activeToolNum, 1)
+    deleteToolHandler(index) {
+      this.setups[this.activeSetupIndex].tools.splice(index, 1)
     },
 
     showSetupHandler(targetSetup) {
-      this.showSetup = true
+      this.activeSetupIndex = this.setups.indexOf(testSetup => testSetup.id !== targetSetup.id)
     },
 
     duplicateSetupHandler(targetSetup) {
@@ -125,9 +133,12 @@ export default {
       this.setups.filter(testSetup => testSetup.id !== targetSetup.id)
     },
 
+    addSetupHandler() {
+      this.showSetup = true
+    },
+
     saveSetupHandler(savedSetup) {
-      this.activeSetup = savedSetup
-      if (this.activeSetupIndex !== -1) {
+      if (this.activeSetupIndex !== 0) {
         this.setups[this.activeSetupIndex].data = savedSetup
       } else {
         const newSetup = {
@@ -141,6 +152,7 @@ export default {
     init() {
       this.showCalc = false
       if (!this.setups.length) {
+        this.activeSetupIndex = 0
         this.showSetup = true
       }
     },

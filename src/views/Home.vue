@@ -10,7 +10,12 @@
       @deleteSetup='deleteSetupHandler'
       @addSetup='addSetupHandler'
       )
-    draggable(v-model='activeTools' @start='drag=true' @end='drag=false')
+    draggable(
+      v-model='activeTools'
+      @start='drag=true'
+      @end='drag=false'
+      :options="{handle :'div.drag'}"
+      )
       tool(
         v-for='(tool,index) in activeTools'
         :tool='tool'
@@ -95,7 +100,7 @@ export default {
     },
 
     totalNumTools() {
-      if (this.activeTools) {
+      if (Object.keys(this.activeSetup).length) {
         return this.activeTools.length
       }
       return 0

@@ -31,11 +31,14 @@ export default {
 
   computed: {
     name() {
-      return this.tool.type
-        .toLowerCase()
-        .split('_')
-        .map(word => word[0].toUpperCase() + word.substr(1))
-        .join(' ')
+      if (this.tool.type) {
+        return this.tool.type
+          .toLowerCase()
+          .split('_')
+          .map(word => word[0].toUpperCase() + word.substr(1))
+          .join(' ')
+      }
+      return ''
     },
   },
 

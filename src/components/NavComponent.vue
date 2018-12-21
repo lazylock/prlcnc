@@ -1,7 +1,8 @@
 <template lang='pug'>
-  nav(class='navbar' role='navigation' aria-label='main navigation')
+  nav(class='navbar is-fixed-top' role='navigation' aria-label='main navigation')
     div(class='navbar-brand')
-      p(class='navbar-item') PRLCNC | {{activeSetup.name}}
+      p(class='navbar-item') PRLCNC
+      a(class='navbar-item' @click='editHandler') {{activeSetup.name}}
       a(
         role='button'
         class='navbar-burger burger'
@@ -16,6 +17,7 @@
         span(aria-hidden='true')
     div(id='setupList' class='navbar-menu' ref='menu')
       div(class='navbar-start')
+      div(class='navbar-end')
         div(class='navbar-item has-dropdown is-hoverable')
           a(class='navbar-link') Setups
           div(class='navbar-dropdown')
@@ -32,7 +34,6 @@
                   i(class='fas fa-trash-alt clickable')
             hr(class='navbar-divider')
             a(class='navbar-item' @click='addHandler') Add Setup
-      div(class='navbar-end')
         a(class='navbar-item') About
 </template>
 
@@ -53,6 +54,10 @@ export default {
 
     showHandler(index) {
       this.$emit('showSetup', index)
+    },
+
+    editHandler() {
+      this.$emit('editSetup')
     },
 
     addHandler() {

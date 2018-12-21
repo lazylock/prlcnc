@@ -5,6 +5,7 @@
       v-bind:activeSetup='activeSetup'
       ref='navigation'
       @showSetup='showSetupHandler'
+      @editSetup='editSetupHandler'
       @duplicateSetup='duplicateSetupHandler'
       @deleteSetup='deleteSetupHandler'
       @addSetup='addSetupHandler'
@@ -68,7 +69,7 @@ export default {
     },
 
     activeMaterial() {
-      if (this.activeSetup) {
+      if (Object.keys(this.activeSetup).length) {
         return this.activeSetup.material
       }
       return ''
@@ -76,7 +77,7 @@ export default {
 
     activeTools: {
       get() {
-        if (this.activeSetup) {
+        if (Object.keys(this.activeSetup).length) {
           return this.activeSetup.tools
         }
         return []
@@ -87,7 +88,7 @@ export default {
     },
 
     activeTool() {
-      if (this.activeTools && this.activeToolIndex < this.totalNumTools) {
+      if (Object.keys(this.activeTools).length && this.activeToolIndex < this.totalNumTools) {
         return this.activeTools[this.activeToolIndex]
       }
       return {}
@@ -124,9 +125,13 @@ export default {
       this.setups[this.activeSetupIndex].tools.splice(index, 1)
     },
 
-    showSetupHandler(setupIndex) {
-      this.activeSetupIndex = setupIndex
+    showSetupHandler(index) {
+      this.activeSetupIndex = index
       this.$refs.navigation.burgerHandler()
+    },
+
+    editSetupHandler() {
+      this.showSetup = true
     },
 
     duplicateSetupHandler(setupIndex) {

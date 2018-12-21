@@ -90,6 +90,7 @@ export default {
         this.setup.material = ''
         this.setup.maxSpeed = ''
         this.setup.id = Math.random()
+        this.setup.tools = []
       }
     },
   },

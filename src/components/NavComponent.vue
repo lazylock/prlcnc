@@ -1,7 +1,7 @@
 <template lang='pug'>
   nav(class='navbar' role='navigation' aria-label='main navigation')
     div(class='navbar-brand')
-      p(class='navbar-item') PRLCNC | {{setupName}}
+      p(class='navbar-item') PRLCNC | {{activeSetup.name}}
       a(
         role='button'
         class='navbar-burger burger'
@@ -19,15 +19,19 @@
         div(class='navbar-item has-dropdown is-hoverable')
           a(class='navbar-link') Setups
           div(class='navbar-dropdown')
-            a(class='navbar-item' v-for='setup in setups' @click='showHandler') {{setup.data.name}}
-              a(@click='duplicateHandler(setup.id)')
+            a(
+              class='navbar-item'
+              v-for='(setup,index) in setups'
+              @click='showHandler(index)'
+              ) {{setup.name}}
+              a(@click='duplicateHandler(index)')
                 span(class='icon')
                   i(class='fas fa-copy clickable')
-              a(@click='deleteHandler(setup.id)')
+              a(@click='deleteHandler(index)')
                 span(class='icon')
                   i(class='fas fa-trash-alt clickable')
             hr(class='navbar-divider')
-            a(class='navbar-item') Add Setup
+            a(class='navbar-item' @click='addHandler') Add Setup
       div(class='navbar-end')
         a(class='navbar-item') About
 </template>
@@ -41,35 +45,26 @@ export default {
     'activeSetup',
   ],
 
-  computed: {
-    setupName() {
-      if (Object.getOwnPropertyNames(this.activeSetup).length) {
-        return this.activeSetup.data.name
-      }
-      return ''
-    },
-  },
-
   methods: {
     burgerHandler() {
       this.$refs.burger.classList.toggle('is-active')
       this.$refs.menu.classList.toggle('is-active')
     },
 
-    showHandler(setup) {
-      this.$emit('showSetup', setup)
+    showHandler(index) {
+      this.$emit('showSetup', index)
     },
 
     addHandler() {
       this.$emit('addSetup')
     },
 
-    duplicateHandler(setup) {
-      this.$emit('duplicateSetup', setup)
+    duplicateHandler(index) {
+      this.$emit('duplicateSetup', index)
     },
 
-    deleteHandler(setup) {
-      this.$emit('deleteSetup', setup)
+    deleteHandler(index) {
+      this.$emit('deleteSetup', index)
     },
   },
 };
@@ -77,6 +72,10 @@ export default {
 
 <style lang='sass'>
 @import '@/styles/vars.sass'
+
+nav
+  box-shadow: 0 2px 3px rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.1)
+  -webkit-box-shadow: 0 2px 3px rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.1)
 
 .navbar-brand
   display: flex

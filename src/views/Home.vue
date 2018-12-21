@@ -3,9 +3,10 @@
     navigation(
       v-bind:setups='setups'
       v-bind:activeSetup='activeSetup'
-      @showSetup='showSetupHandler(setup)'
-      @duplicateSetup='duplicateSetupHandler(setup)'
-      @deleteSetup='deleteSetupHandler(setup)'
+      ref='navigation'
+      @showSetup='showSetupHandler'
+      @duplicateSetup='duplicateSetupHandler'
+      @deleteSetup='deleteSetupHandler'
       @addSetup='addSetupHandler'
       )
     draggable(v-model='activeTools' @start='drag=true' @end='drag=false')
@@ -60,22 +61,22 @@ export default {
 
   computed: {
     activeSetup() {
-      if (this.setups.length) {
+      if (this.setups.length && this.activeSetupIndex < this.setups.length) {
         return this.setups[this.activeSetupIndex]
       }
       return {}
     },
 
     activeMaterial() {
-      if (Object.getOwnPropertyNames(this.activeSetup).length) {
-        return this.activeSetup.data.material
+      if (this.activeSetup) {
+        return this.activeSetup.material
       }
       return ''
     },
 
     activeTools: {
       get() {
-        if (Object.getOwnPropertyNames(this.activeSetup).length) {
+        if (this.activeSetup) {
           return this.activeSetup.tools
         }
         return []
@@ -86,14 +87,17 @@ export default {
     },
 
     activeTool() {
-      if (this.activeTools.length && this.activeToolIndex < this.totalNumTools) {
+      if (this.activeTools && this.activeToolIndex < this.totalNumTools) {
         return this.activeTools[this.activeToolIndex]
       }
       return {}
     },
 
     totalNumTools() {
-      return this.activeTools.length
+      if (this.activeTools) {
+        return this.activeTools.length
+      }
+      return 0
     },
   },
 
@@ -120,32 +124,29 @@ export default {
       this.setups[this.activeSetupIndex].tools.splice(index, 1)
     },
 
-    showSetupHandler(targetSetup) {
-      this.activeSetupIndex = this.setups.indexOf(testSetup => testSetup.id !== targetSetup.id)
+    showSetupHandler(setupIndex) {
+      this.activeSetupIndex = setupIndex
+      this.$refs.navigation.burgerHandler()
     },
 
-    duplicateSetupHandler(targetSetup) {
-      const duplicatedSetup = this.setups.find(testSetup => testSetup.id !== targetSetup.id)
-      this.setups.push(duplicatedSetup)
+    duplicateSetupHandler(setupIndex) {
+      this.setups.push(this.setups[setupIndex])
     },
 
-    deleteSetupHandler(targetSetup) {
-      this.setups.filter(testSetup => testSetup.id !== targetSetup.id)
+    deleteSetupHandler(setupIndex) {
+      this.setups.splice(setupIndex, 1)
     },
 
     addSetupHandler() {
+      this.activeSetupIndex = this.setups.length
       this.showSetup = true
     },
 
     saveSetupHandler(savedSetup) {
-      if (this.activeSetupIndex !== 0) {
-        this.setups[this.activeSetupIndex].data = savedSetup
+      if (this.setups.find(testSetup => testSetup.id === savedSetup.id)) {
+        this.setups[this.activeSetupIndex] = savedSetup
       } else {
-        const newSetup = {
-          data: savedSetup,
-          tools: [],
-        }
-        this.setups.push(newSetup)
+        this.setups.push(savedSetup)
       }
     },
 

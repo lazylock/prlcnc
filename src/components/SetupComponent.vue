@@ -17,7 +17,7 @@
           b-select(v-model='setup.material' expanded)
             option(
               v-for='option in matOptions'
-              v-bind:value='option.value'
+              v-model='option.value'
               ) {{ option.text }}
         b-field(label='Max Spindle Speed')
           b-input(

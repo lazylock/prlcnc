@@ -7,16 +7,16 @@
       div(class='tool')
         h4(class='title is-4') T{{toolNum}}: {{tool.diameter}}" {{name}}
       div(class='speed')
-        p(class='subtitle') Speed: {{tool.speed}} rpm
+        h6(class='subtitle is-6') Speed: {{tool.speed}} rpm
       div(class='feed')
-        p(class='subtitle') Feed: {{tool.feed}} in/min
+        h6(class='subtitle is-6') Feed: {{tool.feed}} in/min
       div(class='trash')
         a(@click='deleteHandler')
-          span(class='icon')
+          span(class='icon has-text-grey-light')
             i(class='fas fa-trash-alt clickable')
       div(class='edit')
         a(@click='editHandler')
-          span(class='icon')
+          span(class='icon has-text-grey-light')
             i(class='fas fa-pencil-alt clickable')
 </template>
 

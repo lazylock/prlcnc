@@ -77,7 +77,6 @@ import vals from '@/values.js';
 export default {
   props: [
     'material',
-    'totalNumTools',
     'toolNum',
     'tool',
   ],
@@ -118,6 +117,12 @@ export default {
     chipLoad() {
       this.calculateFeed()
     },
+  },
+
+  mounted() {
+    if (Object.keys(this.tool).length) {
+      this.init()
+    }
   },
 
   methods: {
@@ -165,13 +170,15 @@ export default {
     },
 
     init() {
-      this.tool.type = ''
-      this.tool.toolMat = ''
-      this.tool.diameter = ''
-      this.tool.numFlutes = ''
-      this.tool.chipLoad = ''
-      this.tool.speed = ''
-      this.tool.feed = ''
+      this.tool = Object.assign({}, this.tool, {
+        type: '',
+        toolMat: '',
+        diameter: '',
+        numFlutes: '',
+        chipLoad: '',
+        speed: '',
+        feed: '',
+      })
     },
   },
 };
@@ -184,7 +191,7 @@ export default {
   pointer-events: initial
 
 .modal-card
-  padding: 0 1em
+  padding: 2em 1em
 
 .modal-close
   display: none !important

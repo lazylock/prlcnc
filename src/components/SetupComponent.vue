@@ -1,11 +1,11 @@
 <template lang='pug'>
-  form(@keypress.enter='enterHandler')
+  form()
     div(class='modal-card')
       header(class='modal-card-head')
         p(class='modal-card-title')
           b-field(ref='title')
             b-input(
-              class='hidden-input title'
+              class='title'
               size='is-large'
               v-model='setup.name'
               maxlength = '25'
@@ -88,10 +88,6 @@ export default {
       }
     },
 
-    enterHandler() {
-
-    },
-
     init() {
       if (!this.setup.name) {
         this.setup = Object.assign({}, this.setup, {
@@ -110,7 +106,8 @@ export default {
 @import '@/styles/vars.sass'
 
 .modal-card-title
-  margin-right: 1.5rem
+  margin-right: 1rem
+  flex-shrink: 1 !important
 
 .modal-card-title input
   font-weight: 600

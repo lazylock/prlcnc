@@ -25,15 +25,15 @@
               class='navbar-item'
               v-for='(setup,index) in setups'
               )
-              a(@click='showHandler(index)') {{setup.name}}
+              a(class='has-text-grey-darker' @click='showHandler(index)') {{setup.name}}
               a(class='is-pulled-right' @click='deleteHandler(index)')
-                span(class='icon')
+                span(class='icon has-text-grey-light')
                   i(class='fas fa-trash-alt clickable')
               a(class='is-pulled-right icon-margin' @click='duplicateHandler(index)')
-                span(class='icon')
+                span(class='icon has-text-grey-light')
                   i(class='fas fa-copy clickable')
             hr(class='navbar-divider')
-            a(class='navbar-item' @click='addHandler') Add Setup
+            a(class='navbar-item has-text-grey-darker' @click='addHandler') Add Setup
         a(class='navbar-item') About
 </template>
 

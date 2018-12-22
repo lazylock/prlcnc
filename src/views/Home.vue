@@ -24,7 +24,7 @@
         @deleteTool='deleteToolHandler(index)'
         @editTool='editToolHandler(index)'
         )
-    b-modal(:active.sync='showCalc' has-modal-card)
+    b-modal(:active.sync='showCalc' ref='calc' has-modal-card)
       calc(
         :material='activeMaterial'
         :totalNumTools='totalNumTools'
@@ -32,11 +32,17 @@
         :tool='activeTool'
          @saveTool='saveToolHandler')
     b-modal(:active.sync='showSetup' has-modal-card)
-      setup(@saveSetup='saveSetupHandler($event)' :setup='activeSetup')
-    div(class='bottom')
-      a(class='button circle is-large is-rounded' @click='addToolHandler')
-        span(class='icon')
-          i(class='fas fa-plus')
+      setup(
+        @saveSetup='saveSetupHandler($event)'
+        :setup='activeSetup'
+        :setupIndex='activeSetupIndex'
+        )
+    div(class='bottom hidden' ref='addTool')
+      a(
+        v-if='activeSetup'
+        class='button circle is-rounded'
+        @click='addToolHandler'
+        ) Add Tool
 </template>
 
 <script>
@@ -107,6 +113,16 @@ export default {
     },
   },
 
+  watch: {
+    activeSetup() {
+      if (Object.keys(this.activeSetup).length) {
+        this.$refs.addTool.classList.remove('hidden')
+      } else {
+        this.$refs.addTool.classList.add('hidden')
+      }
+    },
+  },
+
   mounted() {
     this.init()
   },
@@ -140,11 +156,15 @@ export default {
     },
 
     duplicateSetupHandler(setupIndex) {
-      this.setups.push(this.setups[setupIndex])
+      this.setups.splice(setupIndex + 1, 0, (JSON.parse(JSON.stringify(this.setups[setupIndex]))))
+      this.setups[setupIndex + 1].name += ' Copy'
     },
 
     deleteSetupHandler(setupIndex) {
       this.setups.splice(setupIndex, 1)
+      if (setupIndex === this.activeSetupIndex) {
+        this.activeSetupIndex = 0
+      }
     },
 
     addSetupHandler() {
@@ -153,10 +173,10 @@ export default {
     },
 
     saveSetupHandler(savedSetup) {
-      if (this.setups.find(testSetup => testSetup.id === savedSetup.id)) {
-        this.setups[this.activeSetupIndex] = savedSetup
+      if (this.activeSetupIndex <= this.setups.length) {
+        this.$set(this.setups, this.activeSetupIndex, savedSetup)
       } else {
-        this.setups.push(savedSetup)
+        this.$set(this.setups, this.activeSetupIndex + 1, savedSetup)
       }
     },
 
@@ -181,5 +201,8 @@ export default {
   bottom: 1rem
   display: flex
   justify-content: center
+
+.hidden
+  display: none
 
 </style>

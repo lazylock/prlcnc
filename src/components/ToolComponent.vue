@@ -5,7 +5,7 @@
         span(class='icon')
           i(class='fas fa-grip-vertical')
       div(class='tool')
-        h4(class='title is-4') T{{toolNum}} | {{tool.diameter}}" {{name}}
+        h4(class='title is-4') T{{toolNum}}: {{tool.diameter}}" {{name}}
       div(class='speed')
         p(class='subtitle') Speed: {{tool.speed}} rpm
       div(class='feed')

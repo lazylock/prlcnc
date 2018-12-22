@@ -3,17 +3,18 @@
     div(class='modal-card')
       header(class='modal-card-head')
         p(class='modal-card-title')
-          b-field()
+          b-field(ref='title')
             b-input(
               class='hidden-input title'
               size='is-large'
               v-model='setup.name'
+              maxlength = '25'
               @focus='focusHandler'
               @blur='blurHandler'
               )
         a(class='delete' @click='$parent.close()' aria-label='close')
       section(class='modal-card-body')
-        b-field(label='Material')
+        b-field(ref='material' label='Material')
           b-select(v-model='setup.material' expanded)
             option(
               v-for='option in matOptions'
@@ -40,6 +41,7 @@
 export default {
   props: [
     'setup',
+    'setupIndex',
   ],
 
   data() {
@@ -74,10 +76,16 @@ export default {
     },
 
     saveHandler() {
-      //if (Object.values(this.setup).every(val => val !== '')) {
-        this.$emit('saveSetup', this.setup)
-        this.$parent.close()
-      //}
+      if (this.setup.name) {
+        if (this.setup.material) {
+          this.$emit('saveSetup', this.setup)
+          this.$parent.close()
+        } else {
+          this.$refs.material.type = 'is-danger'
+        }
+      } else {
+        this.$refs.title.type = 'is-danger'
+      }
     },
 
     enterHandler() {
@@ -85,12 +93,13 @@ export default {
     },
 
     init() {
-      if (!this.setup.id) {
-        this.setup.name = ''
-        this.setup.material = ''
-        this.setup.maxSpeed = ''
-        this.setup.id = Math.random()
-        this.setup.tools = []
+      if (!this.setup.name) {
+        this.setup = Object.assign({}, this.setup, {
+          name: `Job ${this.setupIndex + 1}`,
+          material: '',
+          maxSpeed: '',
+          tools: [],
+        })
       }
     },
   },
@@ -106,10 +115,7 @@ export default {
 .modal-card-title input
   font-weight: 600
 
-.hidden-input input
-  border: none
-  background-color: transparent
-  box-shadow: none
-  transition: 0.25s
+.counter
+  display: none !important
 
 </style>

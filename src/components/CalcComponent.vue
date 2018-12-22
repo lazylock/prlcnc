@@ -66,9 +66,6 @@
           a(class='button column is-fullwidth' @click='init')
             span(class='icon is-small')
               i(class='fas fa-eraser')
-          a(class='button column is-fullwidth' @click='addTool')
-            span(class='icon is-small')
-              i(class='fas fa-plus')
           a(class='button column is-fullwidth' @click='saveTool')
             span(class='icon is-small')
               i(class='fas fa-check')
@@ -92,7 +89,7 @@ export default {
         { text: 'Ball End Mill', value: 'ball_end_mill' },
         { text: 'Drill', value: 'drill' },
         { text: 'Center Drill', value: 'center_drill' },
-        { text: 'Face Mill', value: 'face' },
+        { text: 'Face Mill', value: 'face_mill' },
         { text: 'Countersink', value: 'countersink' },
         { text: 'Reamer', value: 'reamer' },
         { text: 'Tap', value: 'tap' },
@@ -147,12 +144,6 @@ export default {
       if (this.tool.chipLoad && this.tool.numFlutes && this.tool.speed) {
         this.feed = Math.round(this.tool.chipLoad * this.tool.numFlutes * this.tool.speed)
       }
-    },
-
-    addTool() {
-      this.doneTool()
-      this.toolNum = this.totalNumTools + 1
-      this.init()
     },
 
     saveTool() {

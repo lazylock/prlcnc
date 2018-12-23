@@ -18,9 +18,9 @@
     div(id='setupList' class='navbar-menu' ref='menu')
       div(class='navbar-start')
       div(class='navbar-end')
-        div(class='navbar-item has-dropdown is-boxed is-hoverable is-right')
+        div(class='navbar-item has-dropdown is-boxed is-hoverable')
           a(class='navbar-link') Setups
-          div(class='navbar-dropdown')
+          div(class='navbar-dropdown is-right')
             div(
               class='navbar-item is-flex'
               v-for='(setup,index) in setups'

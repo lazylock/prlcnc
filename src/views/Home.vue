@@ -27,6 +27,7 @@
     b-modal(:active.sync='showCalc' ref='calc' canCancel='false' has-modal-card)
       calc(
         :material='activeMaterial'
+        :activeMaxSpeed='activeMaxSpeed'
         :activeToolNum='activeToolIndex+1'
         :activeTool='activeTool'
          @saveTool='saveToolHandler'
@@ -82,6 +83,13 @@ export default {
     activeMaterial() {
       if (Object.keys(this.activeSetup).length) {
         return this.activeSetup.material
+      }
+      return ''
+    },
+
+    activeMaxSpeed() {
+      if (Object.keys(this.activeSetup).length) {
+        return this.activeSetup.maxSpeed
       }
       return ''
     },

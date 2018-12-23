@@ -1,45 +1,55 @@
 <template lang='pug'>
-  form()
+  form(@submit.prevent='validateBeforeSubmit')
     div(class='modal-card')
       header(class='modal-card-head')
         p(class='modal-card-title')
-          b-field(ref='title')
+          b-field(
+            ref='name'
+            :type="{'is-danger': errors.has('name')}"
+            )
             b-input(
               class='title'
               size='is-large'
-              :value='activeSetup.name'
-              @input='setup.name = $event'
-              maxlength = '25'
+              name='name'
+              v-model='setup.name'
+              v-validate='{ required: true, max: 25 }'
               @focus='focusHandler'
               @blur='blurHandler'
               )
         a(class='delete' @click='exitHandler' aria-label='close')
       section(class='modal-card-body')
-        b-field(ref='material' label='Material')
+        b-field(
+          ref='material'
+          label='Material'
+          :type="{'is-danger': errors.has('material')}"
+          )
           b-select(
-            :value='activeSetup.material'
-            @input='setup.material = $event'
+            v-model='setup.material'
+            name='material'
+            v-validate='{ required: true }'
             expanded
             )
             option(
               v-for='option in matOptions'
               v-model='option.value'
               ) {{ option.text }}
-        b-field(label='Max Spindle Speed')
+        b-field(
+          label='Max Spindle Speed'
+          :type="{'is-danger': errors.has('maxSpeed')}"
+          )
           b-input(
-            :value='activeSetup.maxSpeed'
-            @input='setup.maxSpeed = $event'
-            min='0'
+            v-model='setup.maxSpeed'
+            name='maxSpeed'
+            v-validate='{ min_value: 0 }'
             step='1'
             type='number')
       footer(class='modal-card-foot')
         div(class='buttons columns')
-          a(class='button column is-fullwidth' @click='clearHandler')
+          a(class='button column is-fullwidth' @click='init')
             span(class='icon is-small')
               i(class='fas fa-eraser')
-          a(class='button column is-fullwidth' @click='saveHandler')
-            span(class='icon is-small')
-              i(class='fas fa-check')
+          button(class='button column is-fullwidth is-flex submit' type='submit')
+            b-icon(pack='fas' size='is-small' icon='check')
 </template>
 
 <script>
@@ -69,7 +79,11 @@ export default {
   },
 
   mounted() {
-    this.init()
+    if (Object.keys(this.activeSetup).length) {
+      this.setup = Object.assign({}, this.setup, this.activeSetup)
+    } else {
+      this.setup.name = `Job ${this.activeSetupIndex + 1}`
+    }
   },
 
   methods: {
@@ -82,10 +96,16 @@ export default {
     },
 
     exitHandler() {
-      const exit = () => {
+      if (Object.keys(this.activeSetup).length) {
         this.$parent.close()
+      } else {
+        if (!this.tool.name) {
+          this.$refs.name.type = 'is-danger'
+        }
+        if (!this.tool.material) {
+          this.$refs.material.type = 'is-danger'
+        }
       }
-      this.checkFields(exit)
     },
 
     clearHandler() {
@@ -94,36 +114,19 @@ export default {
       this.setup.maxSpeed = ''
     },
 
-    saveHandler() {
-      const save = () => {
-        this.$emit('saveSetup', this.setup)
-        this.$parent.close()
-      }
-      this.checkFields(save)
-    },
-
-    checkFields(func) {
-      if (this.setup.name && this.setup.material) {
-        func()
-      } else {
-        if (!this.setup.name) {
-          this.$refs.title.type = 'is-danger'
+    validateBeforeSubmit() {
+      this.$validator.validateAll().then((result) => {
+        if (result) {
+          this.$emit('saveSetup', this.setup)
+          this.$parent.close()
         }
-        if (!this.setup.material) {
-          this.$refs.material.type = 'is-danger'
-        }
-      }
+      })
     },
 
     init() {
-      if (!this.activeSetup.name) {
-        this.activeSetup = Object.assign({}, this.activeSetup, {
-          name: `Job ${this.activeSetupIndex + 1}`,
-          material: '',
-          maxSpeed: '',
-          tools: [],
-        })
-      }
+      this.setup.name = ''
+      this.setup.material = ''
+      this.setup.maxSpeed = ''
     },
   },
 }
@@ -141,5 +144,8 @@ export default {
 
 .counter
   display: none !important
+
+.submit
+  padding: 0 0.75rem !important
 
 </style>

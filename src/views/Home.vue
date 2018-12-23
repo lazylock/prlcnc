@@ -27,8 +27,8 @@
     b-modal(:active.sync='showCalc' ref='calc' canCancel='false' has-modal-card)
       calc(
         :material='activeMaterial'
-        :toolNum='activeToolIndex+1'
-        :tool='activeTool'
+        :activeToolNum='activeToolIndex+1'
+        :activeTool='activeTool'
          @saveTool='saveToolHandler'
          )
     b-modal(:active.sync='showSetup' canCancel='false' has-modal-card)

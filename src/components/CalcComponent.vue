@@ -2,39 +2,51 @@
   form(@keypress.enter='submitHandler')
     div(class='modal-card')
       header(class='modal-card-head')
-        p(class='modal-card-title') Tool {{toolNum}}
+        p(class='modal-card-title') Tool {{activeToolNum}}
         a(class='delete' @click='exitHandler' aria-label='close')
       section(class='modal-card-body')
         b-field(label='Type' ref='type')
-          b-select(v-model='tool.type' expanded)
+          b-select(
+            :value='activeTool.type'
+            @input='tool.type = $event'
+            expanded
+            )
             option(
               v-for='option in toolOptions'
               v-bind:value='option.value'
               ) {{ option.text }}
         b-field(v-if="tool.type==='mill'" label='Tool Material')
-          b-select(v-model='tool.toolMat' expanded)
+          b-select(
+            :value='activeTool.toolMat'
+            @input='tool.toolMat = $event'
+            expanded
+            )
             option(
               v-for='option in toolMatOptions'
               v-bind:value='option.value'
               ) {{ option.text }}
         b-field(label='Diameter' ref='diameter')
           b-input(
-            v-model='tool.diameter'
+            :value='activeTool.diameter'
+            @input='tool.diameter = $event'
             min='0'
             step='0.001'
             type='number')
         b-field(label='Number of Flutes')
           b-input(
-            v-model='tool.numFlutes'
+            :value='activeTool.numFlutes'
+            @input='tool.numFlutes = $event'
             min='0'
             max='6'
+            maxlength='1'
             step='1'
             type='number')
         hr()
         b-field(label='Chip Load')
           div(class='control has-icons-right')
             b-input(
-              v-model='tool.chipLoad'
+              :value='activeTool.chipLoad'
+              @input='tool.chipLoad = $event'
               min='0'
               step='0.001'
               type='number')
@@ -44,7 +56,8 @@
         b-field(label='Spindle Speed (rpm)' ref='speed')
           div(class='control has-icons-right')
             b-input(
-              v-model='tool.speed'
+              :value='activeTool.speed'
+              @input='tool.speed = $event'
               min='0'
               max='99999'
               step='1'
@@ -55,7 +68,8 @@
         b-field(label='Feed Rate (in/min)' ref='feed')
           div(class='control has-icons-right')
             b-input(
-              v-model='tool.feed'
+              :value='activeTool.feed'
+              @input='tool.feed = $event'
               min='0'
               max='999'
               step='1'
@@ -68,7 +82,7 @@
           a(class='button column is-fullwidth' @click='init')
             span(class='icon is-small')
               i(class='fas fa-eraser')
-          a(class='button column is-fullwidth' @click='saveTool')
+          a(class='button column is-fullwidth' type='submit' @click='saveTool')
             span(class='icon is-small')
               i(class='fas fa-check')
 </template>
@@ -79,8 +93,8 @@ import vals from '@/values.js';
 export default {
   props: [
     'material',
-    'toolNum',
-    'tool',
+    'activeToolNum',
+    'activeTool',
   ],
 
   data() {
@@ -99,6 +113,15 @@ export default {
         { text: 'HSS', value: 'hss' },
         { text: 'Carbide', value: 'carbide' },
       ],
+      tool: {
+        type: '',
+        toolMat: '',
+        diameter: '',
+        numFlutes: '',
+        chipLoad: '',
+        speed: '',
+        feed: '',
+      },
       values: vals,
     };
   },
@@ -116,13 +139,10 @@ export default {
     numFlutes() {
       this.calculate()
     },
-    chipLoad() {
-      this.calculateFeed()
-    },
   },
 
   mounted() {
-    if (!Object.keys(this.tool).length) {
+    if (!Object.keys(this.activeTool).length) {
       this.init()
     }
   },
@@ -159,23 +179,10 @@ export default {
 
     saveTool() {
       const save = () => {
-        this.doneTool()
+        this.$emit('saveTool', this.tool)
         this.$parent.close()
       }
       this.checkFields(save)
-    },
-
-    doneTool() {
-      const newTool = {
-        type: this.tool.type,
-        toolMat: this.tool.toolMat,
-        diameter: this.tool.diameter,
-        numFlutes: this.tool.numFlutes,
-        chipLoad: this.tool.chipLoad,
-        speed: this.tool.speed,
-        feed: this.tool.feed,
-      }
-      this.$emit('saveTool', newTool)
     },
 
     checkFields(func) {
@@ -198,7 +205,7 @@ export default {
     },
 
     init() {
-      this.tool = Object.assign({}, this.tool, {
+      this.activeTool = Object.assign({}, this.activeTool, {
         type: '',
         toolMat: '',
         diameter: '',

@@ -7,22 +7,28 @@
             b-input(
               class='title'
               size='is-large'
-              v-model='setup.name'
+              :value='activeSetup.name'
+              @input='setup.name = $event'
               maxlength = '25'
               @focus='focusHandler'
               @blur='blurHandler'
               )
-        a(class='delete' @click='$parent.close()' aria-label='close')
+        a(class='delete' @click='exitHandler' aria-label='close')
       section(class='modal-card-body')
         b-field(ref='material' label='Material')
-          b-select(v-model='setup.material' expanded)
+          b-select(
+            :value='activeSetup.material'
+            @input='setup.material = $event'
+            expanded
+            )
             option(
               v-for='option in matOptions'
               v-model='option.value'
               ) {{ option.text }}
         b-field(label='Max Spindle Speed')
           b-input(
-            v-model='setup.maxSpeed'
+            :value='activeSetup.maxSpeed'
+            @input='setup.maxSpeed = $event'
             min='0'
             step='1'
             type='number')
@@ -40,8 +46,8 @@
 
 export default {
   props: [
-    'setup',
-    'setupIndex',
+    'activeSetup',
+    'activeSetupIndex',
   ],
 
   data() {
@@ -53,6 +59,11 @@ export default {
         { text: 'Mild Steel', value: 'mild_steel' },
         { text: 'Stainless Steel', value: 'stainless_steel' },
       ],
+      setup: {
+        name: '',
+        material: '',
+        maxSpeed: '',
+      },
     };
   },
 
@@ -69,6 +80,13 @@ export default {
       event.target.classList.toggle('hidden-input')
     },
 
+    exitHandler() {
+      const exit = () => {
+        this.$parent.close()
+      }
+      this.checkFields(exit)
+    },
+
     clearHandler() {
       this.setup.name = ''
       this.setup.material = ''
@@ -76,22 +94,30 @@ export default {
     },
 
     saveHandler() {
-      if (this.setup.name) {
-        if (this.setup.material) {
-          this.$emit('saveSetup', this.setup)
-          this.$parent.close()
-        } else {
+      const save = () => {
+        this.$emit('saveSetup', this.setup)
+        this.$parent.close()
+      }
+      this.checkFields(save)
+    },
+
+    checkFields(func) {
+      if (this.setup.name && this.setup.material) {
+        func()
+      } else {
+        if (!this.setup.name) {
+          this.$refs.title.type = 'is-danger'
+        }
+        if (!this.setup.material) {
           this.$refs.material.type = 'is-danger'
         }
-      } else {
-        this.$refs.title.type = 'is-danger'
       }
     },
 
     init() {
-      if (!this.setup.name) {
-        this.setup = Object.assign({}, this.setup, {
-          name: `Job ${this.setupIndex + 1}`,
+      if (!this.activeSetup.name) {
+        this.activeSetup = Object.assign({}, this.activeSetup, {
+          name: `Job ${this.activeSetupIndex + 1}`,
           material: '',
           maxSpeed: '',
           tools: [],

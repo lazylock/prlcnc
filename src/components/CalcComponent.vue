@@ -3,9 +3,9 @@
     div(class='modal-card')
       header(class='modal-card-head')
         p(class='modal-card-title') Tool {{toolNum}}
-        a(class='delete' @click='$parent.close()' aria-label='close')
+        a(class='delete' @click='exitHandler' aria-label='close')
       section(class='modal-card-body')
-        b-field(label='Type')
+        b-field(label='Type' ref='type')
           b-select(v-model='tool.type' expanded)
             option(
               v-for='option in toolOptions'
@@ -17,7 +17,7 @@
               v-for='option in toolMatOptions'
               v-bind:value='option.value'
               ) {{ option.text }}
-        b-field(label='Diameter')
+        b-field(label='Diameter' ref='diameter')
           b-input(
             v-model='tool.diameter'
             min='0'
@@ -41,21 +41,23 @@
             span(class='icon is-right')
               a(@click="calculateChipLoad")
                 i(class='fas fa-calculator clickable')
-        b-field(label='Spindle Speed (rpm)')
+        b-field(label='Spindle Speed (rpm)' ref='speed')
           div(class='control has-icons-right')
             b-input(
               v-model='tool.speed'
               min='0'
+              max='99999'
               step='1'
               type='number')
             span(class='icon is-right')
               a(@click="calculateSpeed")
                 i(class='fas fa-calculator clickable')
-        b-field(label='Feed Rate (in/min)')
+        b-field(label='Feed Rate (in/min)' ref='feed')
           div(class='control has-icons-right')
             b-input(
               v-model='tool.feed'
               min='0'
+              max='999'
               step='1'
               type='number')
             span(class='icon is-right')
@@ -120,7 +122,7 @@ export default {
   },
 
   mounted() {
-    if (Object.keys(this.tool).length) {
+    if (!Object.keys(this.tool).length) {
       this.init()
     }
   },
@@ -151,9 +153,16 @@ export default {
       }
     },
 
-    saveTool() {
-      this.doneTool()
+    exitHandler() {
       this.$parent.close()
+    },
+
+    saveTool() {
+      const save = () => {
+        this.doneTool()
+        this.$parent.close()
+      }
+      this.checkFields(save)
     },
 
     doneTool() {
@@ -167,6 +176,25 @@ export default {
         feed: this.tool.feed,
       }
       this.$emit('saveTool', newTool)
+    },
+
+    checkFields(func) {
+      if (this.tool.type && this.tool.diameter && this.tool.speed && this.tool.feed) {
+        func()
+      } else {
+        if (!this.tool.type) {
+          this.$refs.type.type = 'is-danger'
+        }
+        if (!this.tool.diameter) {
+          this.$refs.diameter.type = 'is-danger'
+        }
+        if (!this.tool.speed) {
+          this.$refs.speed.type = 'is-danger'
+        }
+        if (!this.tool.feed) {
+          this.$refs.feed.type = 'is-danger'
+        }
+      }
     },
 
     init() {

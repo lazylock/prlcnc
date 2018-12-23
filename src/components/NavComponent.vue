@@ -22,16 +22,17 @@
           a(class='navbar-link') Setups
           div(class='navbar-dropdown')
             div(
-              class='navbar-item'
+              class='navbar-item is-flex'
               v-for='(setup,index) in setups'
               )
-              a(class='has-text-grey-darker' @click='showHandler(index)') {{setup.name}}
-              a(class='is-pulled-right' @click='deleteHandler(index)')
-                span(class='icon has-text-grey-light')
-                  i(class='fas fa-trash-alt clickable')
+              a(class='has-text-grey-darker setup' @click='showHandler(index)')
+                div() {{setup.name}}
               a(class='is-pulled-right icon-margin' @click='duplicateHandler(index)')
                 span(class='icon has-text-grey-light')
                   i(class='fas fa-copy clickable')
+              a(class='is-pulled-right' @click='deleteHandler(index)')
+                span(class='icon has-text-grey-light')
+                  i(class='fas fa-trash-alt clickable')
             hr(class='navbar-divider')
             a(class='navbar-item has-text-grey-darker' @click='addHandler') Add Setup
         a(class='navbar-item') About
@@ -88,5 +89,8 @@ nav
 
 .icon-margin
   margin-right: 1em
+
+.setup
+  flex-grow: 1
 
 </style>

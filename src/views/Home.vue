@@ -24,17 +24,18 @@
         @deleteTool='deleteToolHandler(index)'
         @editTool='editToolHandler(index)'
         )
-    b-modal(:active.sync='showCalc' ref='calc' has-modal-card)
+    b-modal(:active.sync='showCalc' ref='calc' canCancel='false' has-modal-card)
       calc(
         :material='activeMaterial'
         :toolNum='activeToolIndex+1'
         :tool='activeTool'
-         @saveTool='saveToolHandler')
-    b-modal(:active.sync='showSetup' has-modal-card)
+         @saveTool='saveToolHandler'
+         )
+    b-modal(:active.sync='showSetup' canCancel='false' has-modal-card)
       setup(
-        @saveSetup='saveSetupHandler($event)'
-        :setup='activeSetup'
-        :setupIndex='activeSetupIndex'
+        @saveSetup='saveSetupHandler'
+        :activeSetup='activeSetup'
+        :activeSetupIndex='activeSetupIndex'
         )
     div(class='bottom hidden' ref='addTool')
       a(
@@ -156,7 +157,7 @@ export default {
 
     duplicateSetupHandler(setupIndex) {
       this.setups.splice(setupIndex + 1, 0, (JSON.parse(JSON.stringify(this.setups[setupIndex]))))
-      this.setups[setupIndex + 1].name += ' Copy'
+      this.activeSetupIndex = setupIndex + 1
     },
 
     deleteSetupHandler(setupIndex) {

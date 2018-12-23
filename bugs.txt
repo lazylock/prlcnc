@@ -1,12 +1,10 @@
 General
-    Job name length when duplicating (copy)
-    Draggable transitions
+    Clickout on empty job/tool
     Actual calculations!
     Local storage
 
 Desktop
     Dropdown formatting
-    Tool eraser not working
 
 Mobile
     Back navigation?

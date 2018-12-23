@@ -63,6 +63,7 @@ export default {
         name: '',
         material: '',
         maxSpeed: '',
+        tools: [],
       },
     };
   },

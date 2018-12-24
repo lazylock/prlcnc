@@ -1,25 +1,55 @@
 export default {
   sfm: {
-    //TODO: Restructure data
     mill: {
-      plastic: 500,
-      aluminum: 300,
-      brass: 200,
-      mildSteel: 100,
-      stainlessSteel: 50,
+      hss: {
+        plastic: 300,
+        aluminum: 600,
+        brass: 175,
+        mild_steel: 70,
+        stainless_steel: 80,
+      },
+      carbide: {
+        plastic: 500,
+        aluminum: 800,
+        brass: 175,
+        mild_steel: 350,
+        stainless_steel: 300,
+      },
     },
     drill: {
-      plastic: 150,
+      plastic: 240,
+      aluminum: 300,
+      brass: 120,
+      mild_steel: 90,
+      stainless_steel: 50,
+    },
+    countersink: {
+      plastic: 160,
+      aluminum: 200,
+      brass: 90,
+      mild_steel: 60,
+      stainless_steel: 35,
+    },
+    reamer: {
+      plastic: 120,
+      aluminum: 150,
+      brass: 66,
+      mild_steel: 45,
+      stainless_steel: 25,
+    },
+    tap: {
+      plastic: 100,
       aluminum: 100,
-      brass: 75,
-      mildSteel: 30,
-      stainlessSteel: 15,
+      brass: 100,
+      mild_steel: 35,
+      stainless_steel: 35,
     },
     face_mill: {
+      plastic: 800,
       aluminum: 1200,
       brass: 800,
-      mildSteel: 600,
-      stainlessSteel: 400,
+      mild_steel: 600,
+      stainless_steel: 400,
     },
   },
 

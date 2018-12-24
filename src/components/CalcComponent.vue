@@ -19,10 +19,10 @@
             )
             option(
               v-for='option in toolOptions'
-              v-bind:value='option.value'
+              :value='option.value'
               ) {{ option.text }}
         b-field(
-          v-if="tool.type==='mill'"
+          v-if="tool.type==='end_mill' || tool.type==='ball_end_mill'"
           label='Tool Material'
           )
           b-select(
@@ -31,7 +31,7 @@
             )
             option(
               v-for='option in toolMatOptions'
-              v-bind:value='option.value'
+              :value='option.value'
               ) {{ option.text }}
         b-field(
           label='Diameter'
@@ -57,6 +57,11 @@
             v-validate='{ min_value: 0, max_value: 6}'
             step='1'
             type='number')
+        b-field(class='space-above')
+          h6(class='is-size-6 left-text has-text-weight-semibold') Automatic Calculation&nbsp
+          b-switch(
+            v-model='autoCalc'
+          )
         hr()
         b-field(
           label='Chip Load'
@@ -128,7 +133,7 @@ export default {
   data() {
     return {
       toolOptions: [
-        { text: 'End Mill', value: 'mill' },
+        { text: 'End Mill', value: 'end_mill' },
         { text: 'Ball End Mill', value: 'ball_end_mill' },
         { text: 'Drill', value: 'drill' },
         { text: 'Center Drill', value: 'center_drill' },
@@ -151,6 +156,7 @@ export default {
         feed: '',
       },
       values: vals,
+      autoCalc: true,
     };
   },
 
@@ -164,17 +170,25 @@ export default {
   },
 
   watch: {
-    type() {
-      this.calculate()
+    'tool.type': function () {
+      if (this.autoCalc) {
+        this.calculate()
+      }
     },
-    toolMat() {
-      this.calculate()
+    'tool.toolMat': function () {
+      if (this.autoCalc) {
+        this.calculate()
+      }
     },
-    diameter() {
-      this.calculate()
+    'tool.diameter': function () {
+      if (this.autoCalc) {
+        this.calculate()
+      }
     },
-    numFlutes() {
-      this.calculate()
+    'tool.numFlutes': function () {
+      if (this.autoCalc) {
+        this.calculate()
+      }
     },
   },
 
@@ -190,25 +204,53 @@ export default {
     calculate() {
       this.calculateChipLoad()
       this.calculateSpeed()
-      this.calculateFeed()
+      this.$nextTick(() => {
+        this.calculateFeed()
+      })
     },
 
     calculateChipLoad() {
-      if (this.tool.type && this.material && this.tool.diameter) {
-        this.tool.chipLoad = 0.001
+      if (this.tool.type && this.tool.diameter) {
+        const dia = this.tool.diameter
+        if (dia < 0.125) {
+          this.$set(this.tool, 'chipLoad', this.values.chipLoad[this.material][0])
+        } else if (dia < 0.25) {
+          this.$set(this.tool, 'chipLoad', this.values.chipLoad[this.material][1])
+        } else if (dia < 0.5) {
+          this.$set(this.tool, 'chipLoad', this.values.chipLoad[this.material][2])
+        } else if (dia < 1) {
+          this.$set(this.tool, 'chipLoad', this.values.chipLoad[this.material][3])
+        } else {
+          this.$set(this.tool, 'chipLoad', this.values.chipLoad[this.material][4])
+        }
       }
     },
 
     calculateSpeed() {
-      if (this.tool.type && this.tool.material && this.tool.diameter) {
-        const sfm = this.values.sfm[this.tool.type][this.material]
-        this.tool.speed = Math.round((sfm * 4) / this.tool.diameter)
+      if (this.tool.type && this.tool.diameter) {
+        let sfm = 0
+        switch (this.tool.type) {
+          case 'end_mill':
+          case 'ball_end_mill':
+            if (this.tool.toolMat) {
+              sfm = this.values.sfm.mill[this.tool.toolMat][this.material]
+            } else {
+              return
+            }
+            break
+          case 'center_drill':
+            sfm = this.values.sfm.drill[this.material]
+            break
+          default:
+            sfm = this.values.sfm[this.tool.type][this.material]
+        }
+        this.tool.speed = Math.round((sfm * 12) / (this.tool.diameter * Math.PI))
       }
     },
 
     calculateFeed() {
       if (this.tool.chipLoad && this.tool.numFlutes && this.tool.speed) {
-        this.feed = Math.round(this.tool.chipLoad * this.tool.numFlutes * this.tool.speed)
+        this.tool.feed = Math.round(this.tool.chipLoad * this.tool.numFlutes * this.tool.speed)
       }
     },
 
@@ -258,5 +300,11 @@ export default {
 
 .button
   margin-top: 0.5rem
+
+.left-text
+  flex-grow: 1
+
+.space-above
+  padding-top: 0.75rem
 
 </style>

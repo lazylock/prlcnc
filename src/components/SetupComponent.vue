@@ -31,7 +31,7 @@
             )
             option(
               v-for='option in matOptions'
-              v-model='option.value'
+              :value='option.value'
               ) {{ option.text }}
         b-field(
           label='Max Spindle Speed'

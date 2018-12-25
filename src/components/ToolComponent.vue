@@ -70,7 +70,7 @@ export default {
   height: 100%
   padding: 1rem !important
   display: grid
-  grid-template-columns: 2rem auto auto 2rem
+  grid-template-columns: 2rem 1fr 1fr 2rem
   grid-auto-rows: 1fr
   grid-template-areas: 'drag tool tool trash' 'drag speed feed edit'
 

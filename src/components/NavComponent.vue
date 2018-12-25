@@ -55,6 +55,7 @@ export default {
 
     showHandler(index) {
       this.$emit('showSetup', index)
+      this.burgerHandler()
     },
 
     editHandler() {
@@ -63,6 +64,7 @@ export default {
 
     addHandler() {
       this.$emit('addSetup')
+      this.burgerHandler()
     },
 
     duplicateHandler(index) {
@@ -71,6 +73,7 @@ export default {
 
     deleteHandler(index) {
       this.$emit('deleteSetup', index)
+      this.burgerHandler()
     },
 
     aboutHandler() {

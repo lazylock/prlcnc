@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/3.6.3/workbox-sw.js");
 
 importScripts(
-  "/prlcnc/precache-manifest.14feedc73914384189eaedecf4f9ddc5.js"
+  "/prlcnc/precache-manifest.4d16adc31f18d87f9bc6db4fb2493605.js"
 );
 
 workbox.core.setCacheNameDetails({prefix: "prlcnc"});

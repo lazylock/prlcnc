@@ -36,14 +36,14 @@
     b-modal(:active.sync='showSetup' :canCancel='[0,0,0]' has-modal-card)
       setup(
         @saveSetup='saveSetupHandler'
-        :activeSetup='activeSetup'
-        :activeSetupIndex='activeSetupIndex'
+        :activeSetup='targetSetup'
+        :activeSetupIndex='targetSetupIndex'
         )
     b-modal(:active.sync='showConfirm' :canCancel='[0,0,0]' has-modal-card)
       confirm(
         @confirm='confirmDeleteHandler'
-        :name='targetName'
-        :index='targetIndex'
+        :name='targetSetupName'
+        :index='targetSetupIndex'
         )
     b-modal(:active.sync='showAbout' has-modal-card)
       about()
@@ -84,12 +84,21 @@ export default {
       setups: [],
       activeSetupIndex: 0,
       activeToolIndex: 0,
-      targetIndex: 0,
-      targetName: '',
+      targetSetupIndex: 0,
+      targetSetupName: '',
     }
   },
 
   computed: {
+    targetSetup() {
+      if (this.setups.length
+      && this.targetSetupIndex < this.setups.length
+      ) {
+        return this.setups[this.targetSetupIndex]
+      }
+      return {}
+    },
+
     activeSetup() {
       if (this.setups.length
       && this.activeSetupIndex < this.setups.length
@@ -148,6 +157,9 @@ export default {
         this.$refs.addTool.classList.add('hidden')
       }
     },
+    activeSetupIndex() {
+      this.targetSetupIndex = this.activeSetupIndex
+    },
   },
 
   mounted() {
@@ -184,7 +196,6 @@ export default {
 
     showSetupHandler(index) {
       this.activeSetupIndex = index
-      this.$refs.navigation.burgerHandler()
     },
 
     editSetupHandler() {
@@ -198,29 +209,31 @@ export default {
     },
 
     deleteSetupHandler(setupIndex) {
-      this.targetIndex = setupIndex
-      this.targetName = this.setups[setupIndex].name
+      this.targetSetupIndex = setupIndex
+      this.targetSetupName = this.setups[setupIndex].name
       this.showConfirm = true
     },
 
     confirmDeleteHandler(setupIndex) {
       this.setups.splice(setupIndex, 1)
-      if (setupIndex === this.activeSetupIndex) {
+      if (setupIndex === this.activeSetupIndex || setupIndex >= this.setups.length) {
         this.activeSetupIndex = 0
       }
       this.updateLocalStorage()
     },
 
     addSetupHandler() {
-      this.activeSetupIndex = this.setups.length
+      this.targetSetupIndex = this.setups.length
       this.showSetup = true
     },
 
     saveSetupHandler(savedSetup) {
-      if (this.activeSetupIndex <= this.setups.length) {
-        this.$set(this.setups, this.activeSetupIndex, savedSetup)
+      if (this.targetSetupIndex <= this.setups.length) {
+        this.$set(this.setups, this.targetSetupIndex, savedSetup)
+        this.activeSetupIndex = this.targetSetupIndex
       } else {
-        this.$set(this.setups, this.activeSetupIndex + 1, savedSetup)
+        this.$set(this.setups, this.targetSetupIndex + 1, savedSetup)
+        this.activeSetupIndex = this.targetSetupIndex + 1
       }
       this.updateLocalStorage()
     },

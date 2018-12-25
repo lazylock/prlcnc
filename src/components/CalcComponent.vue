@@ -60,7 +60,7 @@
         b-field(class='space-above')
           h6(class='is-size-6 left-text has-text-weight-semibold') Automatic Calculation&nbsp
           b-switch(
-            v-model='autoCalc'
+            v-model='tool.autoCalc'
           )
         hr()
         b-field(
@@ -188,9 +188,10 @@ export default {
         chipLoad: '',
         speed: '',
         feed: '',
+        autoCalc: false,
       },
       values: vals,
-      autoCalc: true,
+      startup: true,
     };
   },
 
@@ -205,22 +206,22 @@ export default {
 
   watch: {
     'tool.type': function () {
-      if (this.autoCalc) {
+      if (this.tool.autoCalc && !this.startup) {
         this.calculate()
       }
     },
     'tool.toolMat': function () {
-      if (this.autoCalc) {
+      if (this.tool.autoCalc && !this.startup) {
         this.calculate()
       }
     },
     'tool.diameter': function () {
-      if (this.autoCalc) {
+      if (this.tool.autoCalc && !this.startup) {
         this.calculate()
       }
     },
     'tool.numFlutes': function () {
-      if (this.autoCalc) {
+      if (this.tool.autoCalc && !this.startup) {
         this.calculate()
       }
     },
@@ -232,6 +233,9 @@ export default {
     } else {
       this.init()
     }
+    this.$nextTick(() => {
+      this.startup = false
+    })
   },
 
   methods: {
@@ -320,9 +324,12 @@ export default {
       this.tool.toolMat = ''
       this.tool.diameter = ''
       this.tool.numFlutes = ''
+      this.tool.maxStepover = ''
+      this.tool.maxStepdown = ''
       this.tool.chipLoad = ''
       this.tool.speed = ''
       this.tool.feed = ''
+      this.tool.autoCalc = true
     },
   },
 };

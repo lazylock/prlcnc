@@ -35,7 +35,7 @@
                   i(class='fas fa-trash-alt clickable')
             hr(class='navbar-divider')
             a(class='navbar-item has-text-grey-darker' @click='addHandler') Add Setup
-        a(class='navbar-item') About
+        a(class='navbar-item' @click='aboutHandler') About
 </template>
 
 <script>
@@ -71,6 +71,11 @@ export default {
 
     deleteHandler(index) {
       this.$emit('deleteSetup', index)
+    },
+
+    aboutHandler() {
+      this.$emit('about')
+      this.burgerHandler()
     },
   },
 };

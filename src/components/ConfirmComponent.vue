@@ -2,6 +2,7 @@
   div(class='modal-card')
     header(class='modal-card-head has-text-centered')
       p(class='modal-card-title') Confirm
+      a(class='delete' @click='exitHandler' aria-label='close')
     section(class='modal-card-body has-text-centered')
       p() Delete {{name}}?
     footer(class='modal-card-foot')

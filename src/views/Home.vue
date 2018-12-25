@@ -9,6 +9,7 @@
       @duplicateSetup='duplicateSetupHandler'
       @deleteSetup='deleteSetupHandler'
       @addSetup='addSetupHandler'
+      @about='aboutHandler'
       )
     draggable(
       v-model='activeTools'
@@ -44,6 +45,8 @@
         :name='targetName'
         :index='targetIndex'
         )
+    b-modal(:active.sync='showAbout' has-modal-card)
+      about()
     div(class='bottom hidden' ref='addTool')
       a(
         v-if='activeSetup'
@@ -58,6 +61,7 @@ import setup from '@/components/SetupComponent.vue'
 import tool from '@/components/ToolComponent.vue'
 import navigation from '@/components/NavComponent.vue'
 import confirm from '@/components/ConfirmComponent.vue'
+import about from '@/components/AboutComponent.vue'
 import draggable from 'vuedraggable'
 
 export default {
@@ -68,6 +72,7 @@ export default {
     draggable,
     navigation,
     confirm,
+    about,
   },
 
   data() {
@@ -75,6 +80,7 @@ export default {
       showCalc: false,
       showSetup: false,
       showConfirm: false,
+      showAbout: false,
       setups: [],
       activeSetupIndex: 0,
       activeToolIndex: 0,
@@ -85,7 +91,9 @@ export default {
 
   computed: {
     activeSetup() {
-      if (this.setups.length && this.activeSetupIndex < this.setups.length) {
+      if (this.setups.length
+      && this.activeSetupIndex < this.setups.length
+      ) {
         return this.setups[this.activeSetupIndex]
       }
       return {}
@@ -217,6 +225,10 @@ export default {
       this.updateLocalStorage()
     },
 
+    aboutHandler() {
+      this.showAbout = true
+    },
+
     updateLocalStorage() {
       window.localStorage.setItem('setups', JSON.stringify(this.setups))
     },
@@ -245,5 +257,8 @@ export default {
 
 .hidden
   display: none
+
+.section
+  width: 100%
 
 </style>

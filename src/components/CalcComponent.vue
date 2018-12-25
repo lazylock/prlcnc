@@ -64,6 +64,38 @@
           )
         hr()
         b-field(
+          v-if="tool.type==='end_mill'"
+          label='Max Stepover'
+          :type="{'is-danger': errors.has('max stepover')}"
+          :message="errors.first('max stepover')"
+          )
+          div(class='control has-icons-right')
+            b-input(
+              name='max stepover'
+              v-model='tool.maxStepover'
+              v-validate='{ min_value: 0, max_value: 10 }'
+              step='0.001'
+              type='number')
+            span(class='icon is-right')
+              a(@click="calculateMaxStepover")
+                i(class='fas fa-calculator clickable')
+        b-field(
+          v-if="tool.type==='end_mill'"
+          label='Max Stepdown'
+          :type="{'is-danger': errors.has('max stepdown')}"
+          :message="errors.first('max stepdown')"
+          )
+          div(class='control has-icons-right')
+            b-input(
+              name='max stepdown'
+              v-model='tool.maxStepdown'
+              v-validate='{ min_value: 0, max_value: 1 }'
+              step='0.001'
+              type='number')
+            span(class='icon is-right')
+              a(@click="calculateMaxStepdown")
+                i(class='fas fa-calculator clickable')
+        b-field(
           label='Chip Load'
           :type="{'is-danger': errors.has('chip load')}"
           :message="errors.first('chip load')"
@@ -151,6 +183,8 @@ export default {
         toolMat: '',
         diameter: '',
         numFlutes: '',
+        maxStepover: '',
+        maxStepdown: '',
         chipLoad: '',
         speed: '',
         feed: '',
@@ -204,9 +238,23 @@ export default {
     calculate() {
       this.calculateChipLoad()
       this.calculateSpeed()
+      this.calculateMaxStepover()
+      this.calculateMaxStepdown()
       this.$nextTick(() => {
         this.calculateFeed()
       })
+    },
+
+    calculateMaxStepover() {
+      if (this.tool.type === 'end_mill' && this.tool.diameter) {
+        this.tool.maxStepover = this.tool.diameter / 2
+      }
+    },
+
+    calculateMaxStepdown() {
+      if (this.tool.type === 'end_mill' && this.tool.diameter) {
+        this.tool.maxStepdown = this.tool.diameter / 10
+      }
     },
 
     calculateChipLoad() {

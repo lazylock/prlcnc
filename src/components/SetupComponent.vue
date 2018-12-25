@@ -96,16 +96,7 @@ export default {
     },
 
     exitHandler() {
-      if (Object.keys(this.activeSetup).length) {
-        this.$parent.close()
-      } else {
-        if (!this.setup.name) {
-          this.$refs.name.type = 'is-danger'
-        }
-        if (!this.setup.material) {
-          this.$refs.material.type = 'is-danger'
-        }
-      }
+      this.$parent.close()
     },
 
     clearHandler() {

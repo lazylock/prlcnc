@@ -92,5 +92,6 @@ nav
 
 .setup
   flex-grow: 1
+  padding-right: 0.75rem
 
 </style>

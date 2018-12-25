@@ -99,10 +99,10 @@ export default {
       if (Object.keys(this.activeSetup).length) {
         this.$parent.close()
       } else {
-        if (!this.tool.name) {
+        if (!this.activeSetup.name) {
           this.$refs.name.type = 'is-danger'
         }
-        if (!this.tool.material) {
+        if (!this.activeSetup.material) {
           this.$refs.material.type = 'is-danger'
         }
       }

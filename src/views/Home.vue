@@ -24,7 +24,7 @@
         @deleteTool='deleteToolHandler(index)'
         @editTool='editToolHandler(index)'
         )
-    b-modal(:active.sync='showCalc' ref='calc' canCancel='false' has-modal-card)
+    b-modal(:active.sync='showCalc' ref='calc' :canCancel='[0,0,0]' has-modal-card)
       calc(
         :material='activeMaterial'
         :activeMaxSpeed='activeMaxSpeed'
@@ -32,11 +32,17 @@
         :activeTool='activeTool'
          @saveTool='saveToolHandler'
          )
-    b-modal(:active.sync='showSetup' canCancel='false' has-modal-card)
+    b-modal(:active.sync='showSetup' :canCancel='[0,0,0]' has-modal-card)
       setup(
         @saveSetup='saveSetupHandler'
         :activeSetup='activeSetup'
         :activeSetupIndex='activeSetupIndex'
+        )
+    b-modal(:active.sync='showConfirm' :canCancel='[0,0,0]' has-modal-card)
+      confirm(
+        @confirm='confirmDeleteHandler'
+        :name='targetName'
+        :index='targetIndex'
         )
     div(class='bottom hidden' ref='addTool')
       a(
@@ -51,6 +57,7 @@ import calc from '@/components/CalcComponent.vue'
 import setup from '@/components/SetupComponent.vue'
 import tool from '@/components/ToolComponent.vue'
 import navigation from '@/components/NavComponent.vue'
+import confirm from '@/components/ConfirmComponent.vue'
 import draggable from 'vuedraggable'
 
 export default {
@@ -60,15 +67,19 @@ export default {
     tool,
     draggable,
     navigation,
+    confirm,
   },
 
   data() {
     return {
       showCalc: false,
       showSetup: false,
+      showConfirm: false,
       setups: [],
       activeSetupIndex: 0,
       activeToolIndex: 0,
+      targetIndex: 0,
+      targetName: '',
     }
   },
 
@@ -132,6 +143,13 @@ export default {
   },
 
   mounted() {
+    if (typeof (Storage) !== 'undefined') {
+      if (window.localStorage.getItem('setups')) {
+        this.setups = JSON.parse(window.localStorage.getItem('setups'))
+      } else {
+        window.localStorage.setItem('setups', JSON.stringify([]))
+      }
+    }
     this.init()
   },
 
@@ -148,10 +166,12 @@ export default {
 
     saveToolHandler(savedTool) {
       this.$set(this.setups[this.activeSetupIndex].tools, this.activeToolIndex, savedTool)
+      this.updateLocalStorage()
     },
 
     deleteToolHandler(index) {
       this.setups[this.activeSetupIndex].tools.splice(index, 1)
+      this.updateLocalStorage()
     },
 
     showSetupHandler(index) {
@@ -166,13 +186,21 @@ export default {
     duplicateSetupHandler(setupIndex) {
       this.setups.splice(setupIndex + 1, 0, (JSON.parse(JSON.stringify(this.setups[setupIndex]))))
       this.activeSetupIndex = setupIndex + 1
+      this.updateLocalStorage()
     },
 
     deleteSetupHandler(setupIndex) {
+      this.targetIndex = setupIndex
+      this.targetName = this.setups[setupIndex].name
+      this.showConfirm = true
+    },
+
+    confirmDeleteHandler(setupIndex) {
       this.setups.splice(setupIndex, 1)
       if (setupIndex === this.activeSetupIndex) {
         this.activeSetupIndex = 0
       }
+      this.updateLocalStorage()
     },
 
     addSetupHandler() {
@@ -186,6 +214,11 @@ export default {
       } else {
         this.$set(this.setups, this.activeSetupIndex + 1, savedSetup)
       }
+      this.updateLocalStorage()
+    },
+
+    updateLocalStorage() {
+      window.localStorage.setItem('setups', JSON.stringify(this.setups))
     },
 
     init() {

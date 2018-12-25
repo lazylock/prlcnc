@@ -4,12 +4,13 @@
 </template>
 
 <script>
+import '@/styles/global.sass';
+import '@/styles/vars.sass';
+
 import Vue from 'vue';
 import Buefy from 'buefy';
 import VeeValidate from 'vee-validate';
 import home from './views/Home.vue';
-import 'buefy/dist/buefy.css';
-import '@/styles/global.sass'
 
 Vue.use(Buefy);
 Vue.use(VeeValidate);

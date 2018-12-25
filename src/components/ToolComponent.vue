@@ -2,7 +2,7 @@
   div(class='card')
     div(class='card-content')
       div(class='drag')
-        span(class='icon')
+        span(class='icon has-text-grey-light')
           i(class='fas fa-grip-vertical')
       div(class='tool')
         h4(class='title is-4') {{title}}
@@ -42,7 +42,7 @@ export default {
     },
 
     title() {
-      return `T${this.toolNum}\u00A0\u00A0|\u00A0\u00A0${this.tool.diameter}" ${this.name}`
+      return `T${this.toolNum}\u00A0|\u00A0${this.tool.diameter}" ${this.name}`
     },
   },
 
@@ -64,6 +64,7 @@ export default {
 .card
   margin: 0.5rem
   height: 7.5rem
+  border-radius: 6px
 
 .card-content
   height: 100%

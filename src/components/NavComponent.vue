@@ -1,6 +1,9 @@
 <template lang='pug'>
-  nav(class='navbar is-fixed-top' role='navigation' aria-label='main navigation')
-    div(class='navbar-brand')
+  nav(
+    class='navbar is-fixed-top is-transparent'
+    role='navigation'
+    aria-label='main navigation')
+    div(class='navbar-brand has-text-weight-bold')
       p(class='navbar-item') PRLCNC
       a(v-if='activeSetup.name' class='navbar-item' @click='editHandler') {{activeSetup.name}}
       a(
@@ -19,23 +22,23 @@
       div(class='navbar-start')
       div(class='navbar-end')
         div(class='navbar-item has-dropdown is-boxed is-hoverable')
-          a(class='navbar-link') Setups
-          div(class='navbar-dropdown is-right')
+          a(class='navbar-link has-text-weight-bold') Setups
+          div(class='navbar-dropdown is-right has-background-primary')
             div(
               class='navbar-item is-flex'
               v-for='(setup,index) in setups'
               )
-              a(class='has-text-grey-darker setup' @click='showHandler(index)')
+              a(class='setup' @click='showHandler(index)')
                 div() {{setup.name}}
               a(class='is-pulled-right icon-margin' @click='duplicateHandler(index)')
-                span(class='icon has-text-grey-light')
-                  i(class='fas fa-copy clickable')
+                span(class='icon')
+                  i(class='fas fa-copy clickable has-text-light')
               a(class='is-pulled-right' @click='deleteHandler(index)')
-                span(class='icon has-text-grey-light')
-                  i(class='fas fa-trash-alt clickable')
+                span(class='icon')
+                  i(class='fas fa-trash-alt clickable has-text-light')
             hr(class='navbar-divider')
-            a(class='navbar-item has-text-grey-darker' @click='addHandler') Add Setup
-        a(class='navbar-item' @click='aboutHandler') About
+            a(class='navbar-item' @click='addHandler') Add Setup
+        a(class='navbar-item has-text-weight-bold' @click='aboutHandler') About
 </template>
 
 <script>
@@ -91,6 +94,9 @@ nav
   box-shadow: 0 2px 3px rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.1)
   -webkit-box-shadow: 0 2px 3px rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.1)
 
+nav *
+  color: white !important
+
 .navbar-brand
   display: flex
   text-align: center
@@ -101,5 +107,14 @@ nav
 .setup
   flex-grow: 1
   padding-right: 0.75rem
+
+.burger span
+  height: 2px
+
+nav a:hover
+  background-color: transparent !important
+
+.navbar-link::after
+  border-color: white !important
 
 </style>

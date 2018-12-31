@@ -50,7 +50,7 @@
     div(class='bottom hidden' ref='addTool')
       a(
         v-if='activeSetup'
-        class='button circle is-rounded'
+        class='button is-rounded'
         @click='addToolHandler'
         ) Add Tool
 </template>
@@ -267,6 +267,10 @@ export default {
   bottom: 1rem
   display: flex
   justify-content: center
+
+.bottom a
+  box-shadow: 0 2px 3px rgba(10, 10, 10, 0.1), 0 2px 3px 1px rgba(10, 10, 10, 0.1)
+  -webkit-box-shadow: 0 2px 3px rgba(10, 10, 10, 0.1), 0 2px 3px 1px rgba(10, 10, 10, 0.1)
 
 .hidden
   display: none
